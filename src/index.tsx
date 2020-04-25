@@ -1,9 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './styles/Signin.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { faCheckSquare, faCoffee, faHome, faSignInAlt, faSignOutAlt, faTasks, faUsers, faMoneyBill, faAlignLeft, faIndent, faQuestionCircle, faUser, faUserCircle } from '@fortawesome/free-solid-svg-icons'
+ 
+library.add(fab, faCheckSquare, faCoffee, faHome, faSignInAlt, 
+  faSignOutAlt, faTasks, faUsers, faMoneyBill, faAlignLeft, faIndent, faQuestionCircle, faUser, faUserCircle)
+  
 ReactDOM.render(
   <React.StrictMode>
     <App />
