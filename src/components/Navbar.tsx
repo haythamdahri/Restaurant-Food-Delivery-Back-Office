@@ -1,10 +1,19 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useHistory } from "react-router-dom";
 import logo from "../logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthService from "../services/AuthService";
 
 export default () => {
+
+  let history = useHistory();
+
+  const onSignOut = () => {
+    AuthService.signout();
+    history.push('/signin')
+    window.location.reload();
+  }
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <Link className="navbar-brand" to="/">
@@ -45,7 +54,7 @@ export default () => {
           {AuthService.isAuthenticated() && (
             <>
               <li className="nav-item dropdown">
-                <NavLink
+                <Link
                   className="nav-link dropdown-toggle"
                   to="#"
                   id="navbarDropdown"
@@ -55,7 +64,7 @@ export default () => {
                   aria-expanded="false"
                 >
                   <FontAwesomeIcon icon="tasks" /> Management
-                </NavLink>
+                </Link>
                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                   <NavLink className="dropdown-item" to="/users">
                     <FontAwesomeIcon icon="users" /> Users
@@ -83,13 +92,13 @@ export default () => {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink
+                <Link
                   className="nav-link"
                   to="#"
-                  onClick={(event) => console.log(event)}
+                  onClick={onSignOut}
                 >
                   <FontAwesomeIcon icon="sign-out-alt" /> Sign out
-                </NavLink>
+                </Link>
               </li>
             </>
           )}

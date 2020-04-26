@@ -12,7 +12,7 @@ export default () => {
             // Redirect to sign in page
             history.push('/signin');
         }
-    }, [])
+    }, [history])
 
     return (
         <div className="display-4 text-center">
