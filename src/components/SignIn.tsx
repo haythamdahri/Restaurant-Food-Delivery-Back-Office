@@ -40,6 +40,7 @@ export default (props: any) => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
   let history = useHistory();
+  let abortController: AbortController = new AbortController();
 
   useEffect(() => {
     document.title = "Sign In";
@@ -48,31 +49,30 @@ export default (props: any) => {
       // Redirect to home page
       history.push("/");
     }
-
+    return () => {
+      abortController.abort();
+    };
   });
 
-  const onSubmit = (data: { email: string; password: string }) => {
+  const onSubmit = async (data: { email: string; password: string }) => {
     // Set loading to true
     // Unset error with message
     setLoading(true);
     setMessage("");
     setError(false);
     // Login user using AuthService
-    AuthService.signin(data)
-      .then((response) => {
-        // Rdirect user to home page
-        history.push("/");
-        // window.location.reload();
-        setLoading(false);
-      })
-      .catch((err) => {
-        // Set error with message
-        setMessage(
-          "Unsuccessful attempt, please check your email or password!"
-        );
-        setError(true);
-        setLoading(false);
-      });
+    try {
+      await AuthService.signin(data);
+      // Rdirect user to home page
+      history.push("/");
+    } catch(error) {
+      // Set error with message
+      setMessage(
+        "Unsuccessful attempt, please check your email or password!"
+      );
+      setError(true);
+      setLoading(false);
+    }
   };
 
   return (

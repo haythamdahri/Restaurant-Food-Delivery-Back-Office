@@ -13,7 +13,9 @@ class AuthService {
         let userToken = this.decodeToken(userData.data.token);
         localStorage.setItem(STORAGE_USER, JSON.stringify(userToken));
         return userToken;
-      });
+      }).catch((err) => {
+        throw new Error(err);
+      })
   }
 
   signout() {

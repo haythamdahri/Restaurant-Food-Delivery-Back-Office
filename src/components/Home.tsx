@@ -4,41 +4,109 @@ import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UserService from "../services/UserService";
 import User from "../models/UserToken";
-import Axios from "axios";
+import ProductService from "../services/ProductService";
+import PaymentService from "../services/PaymentService";
+import { Payment } from "../models/Payment";
+import { Order } from "../models/Order";
+import { Review } from "../models/Review";
+import { Meal } from "../models/Meal";
+import ReviewService from "../services/ReviewService";
+import OrderService from "../services/OrderService";
 
 export default () => {
   const [users, setUsers] = useState(new Array<User>());
-  const [loadings, setLoadings] = useState({
-    loadingUsers: true,
-    loadingProducts: true,
-    loadingReviews: true,
-    loadingPayments: true,
-    loadingOrders: true,
-  });
+  const [payments, setPayments] = useState(new Array<Payment>());
+  const [orders, setOrders] = useState(new Array<Order>());
+  const [reviews, setReviews] = useState(new Array<Review>());
+  const [meals, setMeals] = useState(new Array<Meal>());
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [loadingPayments, setLoadingPayments] = useState(true);
+  const [loadingOrders, setLoadingOrders] = useState(true);
   let history = useHistory();
+  let abortController: AbortController = new AbortController();
 
   useEffect(() => {
-    let usersSubscription: Promise<void>;
+    let isCancelled = false;
     document.title = "Home";
     // Check if user is authenticated
     if (!AuthService.isAuthenticated()) {
       // Redirect to sign in page
       history.push("/signin");
+      return;
     } else {
-      // Retrieve users
-      usersSubscription = UserService.getUsers()
-        .then((users) => {
-          setUsers(users);
-          setLoadings({...loadings, loadingUsers: false});
-        })
-        .catch((err) => {
-          setLoadings({...loadings, loadingUsers: false});
-        });
+      const fetchData = async () => {
+        try {
+          // Retrieve users
+          const users = await UserService.getUsers();
+          if (!isCancelled) {
+            setUsers(users);
+            setLoadingUsers(false);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            setUsers([]);
+            setLoadingUsers(false);
+          }
+        } 
+        try {
+          const products = await ProductService.getMeals();
+          if (!isCancelled) {
+            setMeals(products);
+            setLoadingProducts(false);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            setMeals([]);
+            setLoadingProducts(false);
+          }
+        }
+        try {
+          const payments = await PaymentService.getPayments();
+          if (!isCancelled) {
+            setPayments(payments);
+            setLoadingPayments(false);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            setPayments([]);
+            setLoadingPayments(false);
+          }
+        }
+        try {
+          const reviews = await ReviewService.getReviews();
+          if (!isCancelled) {
+            setReviews(reviews);
+            setLoadingReviews(false);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            setReviews([]);
+            setLoadingReviews(false);
+          }
+        }
+        try {
+          const orders = await OrderService.getOrders();
+          if (!isCancelled) {
+            setOrders(orders);
+            setLoadingOrders(false);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            setOrders([]);
+            setLoadingOrders(false);
+          }
+        }
+      };
+      // Fetch data
+      fetchData();
     }
     return () => {
-      usersSubscription.then()
-    }
-  }, [history, loadings]);
+      isCancelled = true;
+      abortController.abort();
+    };
+  }, []);
 
   return (
     <div className="row">
@@ -55,7 +123,7 @@ export default () => {
                   height: "200px",
                 }}
               >
-                {loadings.loadingUsers === false ? (
+                {loadingUsers === false ? (
                   <h1 className="font-weight-bold mt-5 display-4">
                     <FontAwesomeIcon icon="user-circle" /> {users.length} Users
                   </h1>
@@ -81,9 +149,20 @@ export default () => {
                   height: "200px",
                 }}
               >
-                <h1 className="font-weight-bold mt-5 display-4">
-                  <FontAwesomeIcon icon="align-left" /> 90 Product
-                </h1>
+                {loadingProducts === false ? (
+                  <h1 className="font-weight-bold mt-5 display-4">
+                    <FontAwesomeIcon icon="align-left" /> {meals.length}{" "}
+                    Products
+                  </h1>
+                ) : (
+                  <div
+                    className="spinner-border mt-5"
+                    style={{ width: "4rem", height: "4rem" }}
+                    role="status"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -97,9 +176,19 @@ export default () => {
                   height: "200px",
                 }}
               >
-                <h1 className="font-weight-bold mt-5 display-4">
-                  <FontAwesomeIcon icon="indent" /> 986 Review
-                </h1>
+                {loadingReviews === false ? (
+                  <h1 className="font-weight-bold mt-5 display-4">
+                    <FontAwesomeIcon icon="indent" /> {reviews.length} Reviews
+                  </h1>
+                ) : (
+                  <div
+                    className="spinner-border mt-5"
+                    style={{ width: "4rem", height: "4rem" }}
+                    role="status"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -113,9 +202,20 @@ export default () => {
                   height: "200px",
                 }}
               >
-                <h1 className="font-weight-bold mt-5 display-4">
-                  <FontAwesomeIcon icon="shopping-basket" /> 9852 Order
-                </h1>
+                {loadingOrders === false ? (
+                  <h1 className="font-weight-bold mt-5 display-4">
+                    <FontAwesomeIcon icon="shopping-basket" /> {orders.length}{" "}
+                    Orders
+                  </h1>
+                ) : (
+                  <div
+                    className="spinner-border mt-5"
+                    style={{ width: "4rem", height: "4rem" }}
+                    role="status"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -129,9 +229,20 @@ export default () => {
                   height: "200px",
                 }}
               >
-                <h1 className="font-weight-bold mt-5 display-4">
-                  <FontAwesomeIcon icon="money-bill" /> 20 Payment
-                </h1>
+                {loadingPayments === false ? (
+                  <h1 className="font-weight-bold mt-5 display-4">
+                    <FontAwesomeIcon icon="money-bill" /> {payments.length}{" "}
+                    Payments
+                  </h1>
+                ) : (
+                  <div
+                    className="spinner-border mt-5"
+                    style={{ width: "4rem", height: "4rem" }}
+                    role="status"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
