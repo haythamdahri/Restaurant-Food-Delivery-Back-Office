@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useForm } from "react-hook-form";
 import AuthService from "../services/AuthService";
 import loginImage from "../loginImage.jpg";
-import Swal from "sweetalert2";
 
 type FormData = {
   email: string;
@@ -43,13 +42,14 @@ export default (props: any) => {
   let history = useHistory();
 
   useEffect(() => {
+    document.title = "Sign In";
     // Check if user is authenticated
     if (AuthService.isAuthenticated()) {
       // Redirect to home page
       history.push("/");
-      window.location.reload();
     }
-  }, [history]);
+
+  });
 
   const onSubmit = (data: { email: string; password: string }) => {
     // Set loading to true
@@ -62,12 +62,14 @@ export default (props: any) => {
       .then((response) => {
         // Rdirect user to home page
         history.push("/");
-        window.location.reload();
+        // window.location.reload();
         setLoading(false);
       })
       .catch((err) => {
         // Set error with message
-        setMessage('Unsuccessful attempt, please check your email or password!');
+        setMessage(
+          "Unsuccessful attempt, please check your email or password!"
+        );
         setError(true);
         setLoading(false);
       });
@@ -166,8 +168,8 @@ export default (props: any) => {
         <div className="w-100 shadow-sm p-1 mb-3 bg-dark rounded"></div>
         <div className="col-12">
           <h4 className="text-center mt-5">
-            <FontAwesomeIcon icon="user-clock" /> If you are facing problems during session sign in,
-            please contact your administrator!
+            <FontAwesomeIcon icon="user-clock" /> If you are facing problems
+            during session sign in, please contact your administrator!
           </h4>
         </div>
       </div>

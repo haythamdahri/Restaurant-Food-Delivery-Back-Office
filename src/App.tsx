@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import SignIn from "./components/SignIn";
 import NotFound from "./components/NotFound";
 import Home from "./components/Home";
+import Profile from './components/Profile';
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
           </Route>
           <Route path="/signin">
             <SignIn />
+          </Route>
+          <Route path="/profile">
+            <Profile />
           </Route>
           {/** Not Found Page */}
           <Route path="">

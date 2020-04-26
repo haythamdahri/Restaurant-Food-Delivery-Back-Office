@@ -5,14 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthService from "../services/AuthService";
 
 export default () => {
-
   let history = useHistory();
 
   const onSignOut = () => {
     AuthService.signout();
-    history.push('/signin')
-    window.location.reload();
-  }
+    history.push("/signin");
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -38,12 +36,6 @@ export default () => {
       </button>
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
-          <li className="nav-item">
-            <NavLink className="nav-link" exact to="/">
-              <FontAwesomeIcon icon="home" /> Home{" "}
-              <span className="sr-only">(current)</span>
-            </NavLink>
-          </li>
           {!AuthService.isAuthenticated() && (
             <li className="nav-item">
               <NavLink className="nav-link" to="/signin">
@@ -51,8 +43,14 @@ export default () => {
               </NavLink>
             </li>
           )}
-          {AuthService.isAuthenticated() && (
+          {AuthService.isAuthenticated() && AuthService.isEmployee() && (
             <>
+              <li className="nav-item">
+                <NavLink className="nav-link" exact to="/">
+                  <FontAwesomeIcon icon="home" /> Home{" "}
+                  <span className="sr-only">(current)</span>
+                </NavLink>
+              </li>
               <li className="nav-item dropdown">
                 <Link
                   className="nav-link dropdown-toggle"
@@ -86,17 +84,17 @@ export default () => {
                   <FontAwesomeIcon icon="question-circle" /> Support
                 </NavLink>
               </li>
+            </>
+          )}
+          {AuthService.isAuthenticated() && (
+            <>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/profile">
                   <FontAwesomeIcon icon="user-circle" /> Profile
                 </NavLink>
               </li>
               <li className="nav-item">
-                <Link
-                  className="nav-link"
-                  to="#"
-                  onClick={onSignOut}
-                >
+                <Link className="nav-link" to="#" onClick={onSignOut}>
                   <FontAwesomeIcon icon="sign-out-alt" /> Sign out
                 </Link>
               </li>

@@ -1,23 +1,14 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import authHeader from './AuthHeader';
+import User from '../models/UserToken';
 
-const API_URL = 'http://localhost:8080/api/v1/admin/';
+const API_URL = 'http://localhost:8080/api/v1/users/';
 
 class UserService {
-  getPublicContent() {
-    return axios.get(API_URL + 'all');
-  }
-
-  getUserBoard() {
-    return axios.get(API_URL + 'user', { headers: authHeader() });
-  }
-
-  getModeratorBoard() {
-    return axios.get(API_URL + 'mod', { headers: authHeader() });
-  }
-
-  getAdminBoard() {
-    return axios.get(API_URL + 'admin', { headers: authHeader() });
+  getUsers() {
+    return axios.get(API_URL, {headers: authHeader()}).then((response: AxiosResponse<Array<User>>) => {
+      return response.data;
+    });
   }
 }
 
