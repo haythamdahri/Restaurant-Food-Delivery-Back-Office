@@ -1,7 +1,7 @@
-import { Meal } from "./Meal";
+import { MealModel } from "./MealModel";
 
-export default class MealsPage {
-  public content: Meal[] = [];
+export default class MealsPageModel {
+  public content: MealModel[] = [];
   public pageable!: {
     sort: {
       sorted: boolean;

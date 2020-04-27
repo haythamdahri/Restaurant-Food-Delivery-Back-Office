@@ -1,7 +1,7 @@
-import { Review } from './Review';
+import { ReviewModel } from './ReviewModel';
 
-export default class ReviewsPage {
-  public content!: Review[];
+export default class ReviewsPageModel {
+  public content!: ReviewModel[];
   public pageable!: {
     sort: {
       sorted: boolean;

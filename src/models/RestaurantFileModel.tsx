@@ -1,4 +1,4 @@
-export class RestaurantFile {
+export class RestaurantFileModel {
     public id!: number;
     public name!: string;
     public extension!: string;

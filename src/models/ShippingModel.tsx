@@ -1,4 +1,4 @@
-export class Shipping {
+export class ShippingModel {
     public id!: number;
     public country!: string;
     public firstName!: string;

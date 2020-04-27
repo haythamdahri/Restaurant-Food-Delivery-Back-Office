@@ -1,4 +1,4 @@
-export class Country {
+export class CountryModel {
   public name: string = '';
   public topLevelDomain: Array<String> = [];
   public alpha2Code!: string;

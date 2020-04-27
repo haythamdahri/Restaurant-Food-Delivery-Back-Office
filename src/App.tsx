@@ -1,11 +1,12 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SignIn from "./components/SignIn";
 import NotFound from "./components/NotFound";
 import Home from "./components/Home";
 import Profile from './components/Profile';
+import Users from './components/Users';
 
 function App() {
   return (
@@ -23,12 +24,18 @@ function App() {
           <Route path="/signin">
             <SignIn />
           </Route>
+          <Route path="/users">
+            <Users />
+          </Route>
           <Route path="/profile">
             <Profile />
           </Route>
+          <Route path="/notfound">
+            <NotFound />
+          </Route>
           {/** Not Found Page */}
           <Route path="">
-            <NotFound />
+            <Redirect to="/notfound" />
           </Route>
         </Switch>
       </div>

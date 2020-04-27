@@ -145,7 +145,7 @@ export default (props: any) => {
               {/** Required password error */}
               <div className="invalid-feedback">Password is required</div>
             </div>
-            <button type="submit" className="btn btn-primary btn-block mt-4">
+            <button disabled={loading} type="submit" className="btn btn-primary btn-block mt-4">
               {!loading ? (
                 <>
                   <FontAwesomeIcon icon="sign-in-alt" /> Sign in

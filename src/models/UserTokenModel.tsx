@@ -1,4 +1,4 @@
-export default class User {
+export default class UserTokenModel {
     public bearerToken: string = '';
     public token: string = '';
     public email: string = '';

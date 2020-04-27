@@ -7,11 +7,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { faCheckSquare, faCoffee, faHome, faSignInAlt, faSignOutAlt, faTasks, faUsers, faMoneyBill, faAlignLeft, faIndent, faQuestionCircle, faUser, faUserCircle, faUserClock, faExclamation, faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
+import { faCheckSquare, faCoffee, faHome, faSignInAlt, faSignOutAlt, faTasks, faUsers, faMoneyBill, faAlignLeft, faIndent, faQuestionCircle, faUser, faUserCircle, faUserClock, faExclamation, faShoppingBasket, faCheckCircle, faTimesCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
  
 library.add(fab, faCheckSquare, faCoffee, faHome, faSignInAlt, 
   faSignOutAlt, faTasks, faUsers, faMoneyBill, faAlignLeft, faIndent, faQuestionCircle, faUser, faUserCircle, faUserClock,
-    faExclamation, faShoppingBasket)
+    faExclamation, faShoppingBasket, faCheckCircle, faTimesCircle, faExclamationCircle)
   
 ReactDOM.render(
   <React.StrictMode>

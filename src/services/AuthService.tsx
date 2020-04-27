@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import UserToken from "../models/UserToken";
+import UserTokenModel from "../models/UserTokenModel";
 
 
 const API_URL = "http://localhost:8080/auth/";
@@ -22,7 +22,7 @@ class AuthService {
     localStorage.removeItem(STORAGE_USER);
   }
 
-  getCurrentUser(): UserToken {
+  getCurrentUser(): UserTokenModel {
     return JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');
   }
 
@@ -32,7 +32,7 @@ class AuthService {
 
   // Check if user has role
   async hasRole(roleName: string) {
-    let userToken: UserToken = JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');
+    let userToken: UserTokenModel = JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');
     return (
       userToken?.roles?.find(role => role.authority === roleName) != null
     );
@@ -40,7 +40,7 @@ class AuthService {
 
   // Check if connected user is an admin
   isAdmin() {
-    let userToken: UserToken = JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');
+    let userToken: UserTokenModel = JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');
     return (
       userToken?.roles?.find(role => role.authority === 'ROLE_ADMIN') != null
     );
@@ -48,7 +48,7 @@ class AuthService {
 
   // Check if connected user is an admin
   isEmployee() {
-    let userToken: UserToken = JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');
+    let userToken: UserTokenModel = JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');
     return (
       userToken?.roles?.find(role => role.authority === 'ROLE_EMPLOYEE') != null
     );
@@ -58,7 +58,7 @@ class AuthService {
   decodeToken(token: string) {
     var jwtDecode = require('jwt-decode');
     const decoded = jwtDecode(token);
-    let userToken = new UserToken();
+    let userToken = new UserTokenModel();
     userToken.bearerToken = 'Bearer ' + token;
     userToken.token = token;
     userToken.email = decoded.sub;
