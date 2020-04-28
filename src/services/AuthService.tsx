@@ -30,6 +30,10 @@ class AuthService {
     return localStorage.getItem(STORAGE_USER) != null;
   }
 
+  isAuthorized() {
+    return this.isAuthenticated() && (this.isAdmin() || this.isEmployee());
+  }
+
   // Check if user has role
   async hasRole(roleName: string) {
     let userToken: UserTokenModel = JSON.parse(localStorage.getItem(STORAGE_USER) || '{}');

@@ -7,6 +7,7 @@ import NotFound from "./components/NotFound";
 import Home from "./components/Home";
 import Profile from './components/Profile';
 import Users from './components/Users';
+import PrivateRoute, { UserRoute, AuthenticatedGuard } from './services/AuthGuard';
 
 function App() {
   return (
@@ -18,18 +19,18 @@ function App() {
             renders the first one that matches the current URL. */}
       <div className="container-fluid">
         <Switch>
-          <Route exact={true} path="/">
+          <PrivateRoute exact={true} path="/">
             <Home />
-          </Route>
-          <Route path="/signin">
+          </PrivateRoute>
+          <AuthenticatedGuard path="/signin">
             <SignIn />
-          </Route>
-          <Route path="/users">
+          </AuthenticatedGuard>
+          <PrivateRoute path="/users">
             <Users />
-          </Route>
-          <Route path="/profile">
+          </PrivateRoute>
+          <UserRoute path="/profile">
             <Profile />
-          </Route>
+          </UserRoute>
           <Route path="/notfound">
             <NotFound />
           </Route>

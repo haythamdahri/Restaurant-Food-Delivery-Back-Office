@@ -11,12 +11,9 @@ export default (props: {user: UserModel, setReload: any}) => {
 
     const handleAccountStatus = async (status: string) => {
         try {
-            // Disable button
-            if( status === ENABLE ) {
-                (enableBtn.current as HTMLButtonElement).setAttribute('disabled', 'true');
-            } else {
-                (disableBtn.current as HTMLButtonElement).setAttribute('disabled', 'true');
-            }
+            // Disable buttons
+            (enableBtn.current as HTMLButtonElement).setAttribute('disabled', 'true');
+            (disableBtn.current as HTMLButtonElement).setAttribute('disabled', 'true');
             await UserService.updateAcountStatus(status, props.user.id);
             props.setReload(Date.now);
         } catch(err) {
