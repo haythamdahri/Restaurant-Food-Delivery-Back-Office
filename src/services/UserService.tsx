@@ -6,9 +6,13 @@ import { ENABLE, DISABLE } from "./Constants";
 const API_URL = "http://localhost:8080/api/v1/users";
 
 class UserService {
-  getUsers() {
+  getUsers(search: string = '') {
+    const params = {search: ''};
+    if(search !== '' ) {
+      params['search'] = search;
+    }
     return axios
-      .get(`${API_URL}/`, { headers: authHeader() })
+      .get(`${API_URL}/`, { params, headers: authHeader() })
       .then((response: AxiosResponse<Array<UserModel>>) => {
         return response.data;
       })
