@@ -39,7 +39,7 @@ export default () => {
       const fetchData = async () => {
         try {
           // Retrieve users
-          const users = await UserService.getUsers();
+          const users = await UserService.getBasicUsers('');
           if (!isCancelled) {
             setUsers(users);
             setLoadingUsers(false);

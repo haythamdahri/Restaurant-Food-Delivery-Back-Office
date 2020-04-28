@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { UserModel } from "../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UserService from "../services/UserService";

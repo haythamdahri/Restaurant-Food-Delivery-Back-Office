@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import User from "./User";
 import { UserModel } from "../models/UserModel";
 import UserService from "../services/UserService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useForm } from "react-hook-form";
+import { Page } from "../pagination/Page";
+import CustomPagination from "../pagination/components/custom-pagination/CustomPagination";
+import CustomPaginationService from "../pagination/services/CustomPaginationService";
 
 const inputStyle = {
   display: "block",
@@ -25,20 +27,24 @@ type FormData = {
   search: string;
 };
 export default () => {
-  const [users, setUsers] = useState(new Array<UserModel>());
+  const searchInput = useRef(null);
   const [loading, setLoading] = useState(true);
   const [reload, setReload] = useState(Date.now);
-  const { register, handleSubmit, errors } = useForm<FormData>();
   let isCancelled = false;
-
-  const fetchData = async (search: string = '') => {
+  const [page, setPage] = useState(new Page<UserModel>());
+  const fetchData = async () => {
     try {
+      const search = ((searchInput.current as unknown) as HTMLInputElement)
+        .value;
       // Init data
-      setUsers([]);
       setLoading(true);
-      const users = await UserService.getUsers(search);
+      const usersPage = await UserService.getBasicUsersPage(
+        search,
+        page.pageable
+      );
+      console.log();
       if (!isCancelled) {
-        setUsers(users);
+        setPage(usersPage);
         setLoading(false);
       }
     } catch (err) {
@@ -56,31 +62,48 @@ export default () => {
     };
   }, [reload]);
 
-  const onSearchSubmit = (data: {search: string}) => {
+  const getNextPage = () => {
+    page.pageable = CustomPaginationService.getNextPage(page);
+    fetchData();
+  };
+
+  const getPreviousPage = () => {
+    page.pageable = CustomPaginationService.getPreviousPage(page);
+    fetchData();
+  };
+
+  const getPageInNewSize = (pageSize: number) => {
+    page.pageable = CustomPaginationService.getPageInNewSize(page, pageSize);
+    fetchData();
+  };
+
+  const onSearchSubmit = (event: any) => {
+    event.preventDefault();
     // Search users
-    fetchData(data.search);
-  }
+    fetchData();
+  };
 
   return (
     <div className="row">
       <div className="col-sm-12 col-md-10 col-lg-10 col-xl-10 mx-auto mt-4 mb-4">
-        <form onSubmit={handleSubmit(onSearchSubmit)}>
+        <form onSubmit={onSearchSubmit}>
           <div className="form-row">
             <div className="col-sm-12 col-md-10 col-lg-10 col-xl-10 mx-auto">
               <input
                 style={inputStyle}
                 type="search"
-                className={`form-control ${errors.search ? "is-invalid" : ""}`}
                 id="userSearch"
-                placeholder="Search user by id, name, email ...."
-                ref={register({
-                  required: false
-                })}
+                placeholder="Search user by username, email, location ...."
                 name="search"
+                className="form-control"
+                ref={searchInput}
               />
             </div>
             <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 mx-auto">
-              <button type="submit" className="btn btn-warning btn-block font-weight-bold">
+              <button
+                type="submit"
+                className="btn btn-warning btn-block font-weight-bold"
+              >
                 <FontAwesomeIcon icon="search-dollar" /> Search
               </button>
             </div>
@@ -122,7 +145,7 @@ export default () => {
                   </td>
                 </tr>
               )}
-              {!loading && users.length === 0 && (
+              {!loading && page.content.length === 0 && (
                 <tr>
                   <td colSpan={8} className="text-center alert alert-dark">
                     <h2 className="font-weight-bold">
@@ -132,12 +155,22 @@ export default () => {
                   </td>
                 </tr>
               )}
-              {users.map((user, index) => {
+              {page?.content?.map((user, index) => {
                 return <User key={index} user={user} setReload={setReload} />;
               })}
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="col-12 text-center">
+        <CustomPagination
+          page={page}
+          loading={loading}
+          nextPageEvent={getNextPage}
+          previousPageEvent={getPreviousPage}
+          pageSizeEvent={getPageInNewSize}
+        />
       </div>
     </div>
   );
