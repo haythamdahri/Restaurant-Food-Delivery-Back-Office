@@ -52,6 +52,7 @@
   "devDependencies": {
     "@types/jwt-decode": "^2.2.1",
     "@types/react-router-dom": "^5.1.4",
+    "@types/react-toast-notifications": "^2.4.0",
     "css-loader": "^3.5.3",
     "style-loader": "^1.2.0"
   }

@@ -33,20 +33,22 @@ export default (props: {
             {props?.page?.size}
           </button>
           <div className="dropdown-menu dropdown-menu-right menu">
-            <span className="dropdown-item active" onClick={event => updatePageSize(5)}>5</span>
-            <span className="dropdown-item" onClick={event => updatePageSize(20)}>20</span>
-            <span className="dropdown-item" onClick={event => updatePageSize(100)}>100</span>
+            <span style={{cursor: 'pointer'}} className="dropdown-item" onClick={event => updatePageSize(5)}>5</span>
+            <span style={{cursor: 'pointer'}} className="dropdown-item" onClick={event => updatePageSize(20)}>20</span>
+            <span style={{cursor: 'pointer'}} className="dropdown-item" onClick={event => updatePageSize(100)}>100</span>
           </div>
         </div>
         <span className="align-self-center mb-1 mr-2 text-muted">
           Shows {props?.page?.numberOfElements} of {props?.page?.totalElements}
         </span>
-        <span 
+        <span  
+          style={{cursor: 'pointer'}}
           className={`btn btn-outline ${props?.page?.first || props?.loading ? 'disabled' : ''}`}
           onClick={event => previousPage()}>
           <FontAwesomeIcon icon="angle-double-left" />
         </span>
         <span 
+          style={{cursor: 'pointer'}}
           className={`btn btn-outline ${props?.page?.last || props?.loading ? 'disabled' : ''}`}
           onClick={event => nextPage()}>
           <FontAwesomeIcon icon="angle-double-right" />
