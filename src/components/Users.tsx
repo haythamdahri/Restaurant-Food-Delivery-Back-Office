@@ -29,6 +29,7 @@ type FormData = {
 export default () => {
   const searchInput = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [reload, setReload] = useState(Date.now);
   let isCancelled = false;
   const [page, setPage] = useState(new Page<UserModel>());
@@ -37,18 +38,20 @@ export default () => {
       const search = ((searchInput.current as unknown) as HTMLInputElement)
         .value;
       // Init data
-      setLoading(true);
-      const usersPage = await UserService.getBasicUsersPage(
-        search,
-        page.pageable
-      );
       if (!isCancelled) {
+        setLoading(true);
+        setError(false);
+        const usersPage = await UserService.getBasicUsersPage(
+          search,
+          page.pageable
+        );
         setPage(usersPage);
         setLoading(false);
       }
     } catch (err) {
       if (!isCancelled) {
         setLoading(false);
+        setError(true);
       }
     }
   };
@@ -150,6 +153,18 @@ export default () => {
                     <h2 className="font-weight-bold">
                       <FontAwesomeIcon icon="exclamation-circle" /> No users
                       found!
+                    </h2>
+                  </td>
+                </tr>
+              )}
+              {error === true && (
+                <tr>
+                  <td colSpan={8} className="text-center alert alert-warning">
+                    <h2 className="font-weight-bold">
+                      <FontAwesomeIcon icon="exclamation-circle" /> An error occurred! 
+                        <button onClick={fetchData} className="btn btn-warning font-weight-bold ml-2">
+                        <FontAwesomeIcon icon="sync" /> Reload
+                        </button>
                     </h2>
                   </td>
                 </tr>

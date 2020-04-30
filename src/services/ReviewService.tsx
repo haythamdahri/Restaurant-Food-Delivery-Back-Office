@@ -4,6 +4,7 @@ import { ReviewModel } from "../models/ReviewModel";
 import { Page } from "../pagination/Page";
 import { Pageable } from "../pagination/Pageable";
 import { APPROVE, DISAPPROVE } from "./Constants";
+import { MealModel } from "../models/MealModel";
 
 const API_URL = "http://localhost:8080/api/v1/reviews";
 
@@ -33,7 +34,19 @@ class ReviewService {
     }
     return axios
       .get(url, { params, headers: authHeader() })
-      .then((response: AxiosResponse<Page<ReviewModel>>) => {
+      .then(async (response: AxiosResponse<Page<ReviewModel>>) => {
+        // Set meal for each review
+        return response.data;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  }
+
+  getReviewMeal(id: number) {
+    return axios
+      .get(`${API_URL}/${id}/meal`, { headers: authHeader() })
+      .then((response: AxiosResponse<MealModel>) => {
         return response.data;
       })
       .catch((err) => {

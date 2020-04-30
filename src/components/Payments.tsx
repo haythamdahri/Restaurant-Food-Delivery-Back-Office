@@ -29,27 +29,31 @@ type FormData = {
 export default () => {
   const searchInput = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [reload] = useState(Date.now);
   let isCancelled = false;
   const [page, setPage] = useState(new Page<PaymentModel>());
 
   const fetchData = async () => {
     try {
-      const search = ((searchInput.current as unknown) as HTMLInputElement).value;
+      const search = ((searchInput.current as unknown) as HTMLInputElement)
+        .value;
       // Init data
-      setPage(new Page<PaymentModel>());
-      setLoading(true);
-      const paymentsPage = await PaymentService.getPaymentsPage(
-        search,
-        page.pageable
-      );
       if (!isCancelled) {
+        setPage(new Page<PaymentModel>());
+        setLoading(true);
+        setError(false);
+        const paymentsPage = await PaymentService.getPaymentsPage(
+          search,
+          page.pageable
+        );
         setPage(paymentsPage);
         setLoading(false);
       }
     } catch (err) {
       if (!isCancelled) {
         setLoading(false);
+        setError(true);
       }
     }
   };
@@ -116,29 +120,39 @@ export default () => {
             <thead className="thead-light">
               <tr>
                 <th scope="col">#</th>
-                <th 
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >User ID</th>
+                >
+                  User ID
+                </th>
                 <th scope="col">Email</th>
                 <th scope="col">Username</th>
                 <th scope="col">Order ID</th>
-                <th 
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >Total Price</th>
-                <th 
+                >
+                  Total Price
+                </th>
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >Delivery Status</th>
-                <th 
+                >
+                  Delivery Status
+                </th>
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >Cancel Status</th>
-                <th 
+                >
+                  Cancel Status
+                </th>
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >Order Date</th>
+                >
+                  Order Date
+                </th>
                 <th scope="col">Payment Date</th>
               </tr>
             </thead>
@@ -158,6 +172,18 @@ export default () => {
                     <h2 className="font-weight-bold">
                       <FontAwesomeIcon icon="exclamation-circle" /> No payments
                       found!
+                    </h2>
+                  </td>
+                </tr>
+              )}
+              {error === true && (
+                <tr>
+                  <td colSpan={10} className="text-center alert alert-warning">
+                    <h2 className="font-weight-bold">
+                      <FontAwesomeIcon icon="exclamation-circle" /> An error occurred! 
+                        <button onClick={fetchData} className="btn btn-warning font-weight-bold ml-2">
+                        <FontAwesomeIcon icon="sync" /> Reload
+                        </button>
                     </h2>
                   </td>
                 </tr>

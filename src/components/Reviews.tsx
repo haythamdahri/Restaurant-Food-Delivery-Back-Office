@@ -6,6 +6,7 @@ import CustomPaginationService from "../pagination/services/CustomPaginationServ
 import { ReviewModel } from "../models/ReviewModel";
 import ReviewService from "../services/ReviewService";
 import Review from "./Review";
+import ReviewContentModal from "./modals/ReviewContentModal";
 
 const inputStyle = {
   display: "block",
@@ -29,6 +30,7 @@ type FormData = {
 export default () => {
   const searchInput = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [page, setPage] = useState(new Page<ReviewModel>());
   let isCancelled = false;
   const fetchData = async () => {
@@ -37,18 +39,20 @@ export default () => {
         .value;
       // Init data
       if (!isCancelled) {
+        setPage(new Page<ReviewModel>());
         setLoading(true);
+        setError(false);
         const reviewsPage = await ReviewService.getReviewsPage(
           search,
           page.pageable
         );
-        console.log('GETTING REVIEWS');
         setPage(reviewsPage);
         setLoading(false);
       }
     } catch (err) {
       if (!isCancelled) {
         setLoading(false);
+        setError(true);
       }
     }
   };
@@ -116,13 +120,21 @@ export default () => {
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">User ID</th>
+                <th scope="col">Meal ID</th>
                 <th scope="col">User Email</th>
-                <th scope="col">Date</th>
+                <th
+                  style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col">Rating</th>
+                <th 
+                  style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col"
+                >Date</th>
+                <th scope="col">Meal Name</th>
                 <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
                 >
-                  Review
+                  Content
                 </th>
                 <th
                   style={{ justifyContent: "center", textAlign: "center" }}
@@ -142,16 +154,28 @@ export default () => {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="text-center bg-light">
+                  <td colSpan={10} className="text-center bg-light">
                     <div className="spinner-border text-primary" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>
                   </td>
                 </tr>
               )}
+              {error === true && (
+                <tr>
+                  <td colSpan={10} className="text-center alert alert-warning">
+                    <h2 className="font-weight-bold">
+                      <FontAwesomeIcon icon="exclamation-circle" /> An error occurred! 
+                        <button onClick={fetchData} className="btn btn-warning font-weight-bold ml-2">
+                        <FontAwesomeIcon icon="sync" /> Reload
+                        </button>
+                    </h2>
+                  </td>
+                </tr>
+              )}
               {!loading && page?.content?.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="text-center alert alert-dark">
+                  <td colSpan={10} className="text-center alert alert-dark">
                     <h2 className="font-weight-bold">
                       <FontAwesomeIcon icon="exclamation-circle" /> No reviews
                       found!
@@ -166,6 +190,10 @@ export default () => {
           </table>
         </div>
       </div>
+
+      {page?.content?.map((review, index) => {
+        return <ReviewContentModal key={index} {...review} />;
+      })}
 
       <div className="col-12 text-center">
         <CustomPagination

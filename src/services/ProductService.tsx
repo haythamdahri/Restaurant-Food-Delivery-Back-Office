@@ -14,6 +14,16 @@ class ProductService {
         throw new Error(err);
       });
   }
+
+  getMeal(id: number) {
+    return axios
+      .get(`${API_URL}/${id}`, { headers: authHeader() })
+      .then((response: AxiosResponse<Array<MealModel>>) => {
+        return response.data;
+      }).catch((err) => {
+        throw new Error(err);
+      });
+  }
 }
 
 export default new ProductService();

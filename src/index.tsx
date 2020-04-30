@@ -30,6 +30,9 @@ import {
   faSearchDollar,
   faAngleDoubleRight,
   faAngleDoubleLeft,
+  faEye,
+  faSync,
+  faFileMedicalAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -55,7 +58,10 @@ library.add(
   faExclamationCircle,
   faSearchDollar,
   faAngleDoubleLeft,
-  faAngleDoubleRight
+  faAngleDoubleRight,
+  faEye,
+  faSync,
+  faFileMedicalAlt
 );
 
 ReactDOM.render(
