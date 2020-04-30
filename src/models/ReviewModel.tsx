@@ -8,4 +8,5 @@ export class ReviewModel {
     public comment!: string;
     public rating!: number;
     public timestamp!: Date;
+    public approved!: boolean;
 }

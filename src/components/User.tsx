@@ -23,8 +23,8 @@ export default (props: { user: UserModel; setReload: any }) => {
       } else {
         setDisabling(true);
       }
-      await UserService.updateAcountStatus(status, props.user.id);
-      props.user.enabled = status === ENABLE ? true : false;
+      const user = await UserService.updateAcountStatus(status, props.user.id);
+      props.user.enabled = user!.enabled;
       Toast.fire({
         icon: 'success',
         title: `Account has been ${status === ENABLE ? 'enabled' : 'disabled'} successfully`,

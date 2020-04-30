@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Page } from "../pagination/Page";
 import CustomPagination from "../pagination/components/custom-pagination/CustomPagination";
 import CustomPaginationService from "../pagination/services/CustomPaginationService";
-import { PaymentModel } from "../models/PaymentModel";
-import Payment from "./Payment";
-import PaymentService from "../services/PaymentService";
+import { ReviewModel } from "../models/ReviewModel";
+import ReviewService from "../services/ReviewService";
+import Review from "./Review";
 
 const inputStyle = {
   display: "block",
@@ -29,22 +29,21 @@ type FormData = {
 export default () => {
   const searchInput = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [reload] = useState(Date.now);
+  const [page, setPage] = useState(new Page<ReviewModel>());
   let isCancelled = false;
-  const [page, setPage] = useState(new Page<PaymentModel>());
-
   const fetchData = async () => {
     try {
-      const search = ((searchInput.current as unknown) as HTMLInputElement).value;
+      const search = ((searchInput.current as unknown) as HTMLInputElement)
+        .value;
       // Init data
-      setPage(new Page<PaymentModel>());
-      setLoading(true);
-      const paymentsPage = await PaymentService.getPaymentsPage(
-        search,
-        page.pageable
-      );
       if (!isCancelled) {
-        setPage(paymentsPage);
+        setLoading(true);
+        const reviewsPage = await ReviewService.getReviewsPage(
+          search,
+          page.pageable
+        );
+        console.log('GETTING REVIEWS');
+        setPage(reviewsPage);
         setLoading(false);
       }
     } catch (err) {
@@ -55,12 +54,12 @@ export default () => {
   };
 
   useEffect(() => {
-    document.title = "Payments";
+    document.title = "Reviews";
     fetchData();
     return () => {
       isCancelled = true;
     };
-  }, [reload]);
+  }, []);
 
   const getNextPage = () => {
     page.pageable = CustomPaginationService.getNextPage(page);
@@ -77,7 +76,7 @@ export default () => {
     fetchData();
   };
 
-  const onSearchSubmit = (event: any) => {
+  const onSearchSubmit = async (event: any) => {
     event.preventDefault();
     // Search users
     getPageInNewSize(20);
@@ -93,7 +92,7 @@ export default () => {
                 style={inputStyle}
                 type="search"
                 id="userSearch"
-                placeholder="Search user by payment id, username, email, location ...."
+                placeholder="Search user by username, email, location ...."
                 name="search"
                 className="form-control"
                 ref={searchInput}
@@ -116,36 +115,34 @@ export default () => {
             <thead className="thead-light">
               <tr>
                 <th scope="col">#</th>
-                <th 
+                <th scope="col">User ID</th>
+                <th scope="col">User Email</th>
+                <th scope="col">Date</th>
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >User ID</th>
-                <th scope="col">Email</th>
-                <th scope="col">Username</th>
-                <th scope="col">Order ID</th>
-                <th 
+                >
+                  Review
+                </th>
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >Total Price</th>
-                <th 
+                >
+                  Approved
+                </th>
+                <th
                   style={{ justifyContent: "center", textAlign: "center" }}
                   scope="col"
-                >Delivery Status</th>
-                <th 
-                  style={{ justifyContent: "center", textAlign: "center" }}
-                  scope="col"
-                >Cancel Status</th>
-                <th 
-                  style={{ justifyContent: "center", textAlign: "center" }}
-                  scope="col"
-                >Order Date</th>
-                <th scope="col">Payment Date</th>
+                  colSpan={2}
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={10} className="text-center bg-light">
+                  <td colSpan={8} className="text-center bg-light">
                     <div className="spinner-border text-primary" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>
@@ -154,16 +151,16 @@ export default () => {
               )}
               {!loading && page?.content?.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="text-center alert alert-dark">
+                  <td colSpan={8} className="text-center alert alert-dark">
                     <h2 className="font-weight-bold">
-                      <FontAwesomeIcon icon="exclamation-circle" /> No payments
+                      <FontAwesomeIcon icon="exclamation-circle" /> No reviews
                       found!
                     </h2>
                   </td>
                 </tr>
               )}
-              {page?.content?.map((payment, index) => {
-                return <Payment key={index} payment={payment} />;
+              {page?.content?.map((review, index) => {
+                return <Review key={index} review={review} />;
               })}
             </tbody>
           </table>

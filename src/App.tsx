@@ -17,6 +17,7 @@ import PrivateRoute, {
   AuthenticatedGuard,
 } from "./services/AuthGuard";
 import Payments from "./components/Payments";
+import Reviews from "./components/Reviews";
 
 function App() {
   return (
@@ -39,6 +40,9 @@ function App() {
           </PrivateRoute>
           <PrivateRoute path="/payments">
             <Payments />
+          </PrivateRoute>
+          <PrivateRoute path="/reviews">
+            <Reviews />
           </PrivateRoute>
           <UserRoute path="/profile">
             <Profile />

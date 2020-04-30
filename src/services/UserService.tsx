@@ -46,7 +46,7 @@ class UserService {
       case ENABLE:
         return axios
           .get(`${API_URL}/${ENABLE}`, { params: {id: id}, headers: authHeader() })
-          .then((response: AxiosResponse<Array<UserModel>>) => {
+          .then((response: AxiosResponse<UserModel>) => {
             return response.data;
           })
           .catch((err) => {
@@ -55,7 +55,7 @@ class UserService {
       case DISABLE:
         return axios
           .get(`${API_URL}/${DISABLE}`, { params: {id: id}, headers: authHeader() })
-          .then((response: AxiosResponse<Array<UserModel>>) => {
+          .then((response: AxiosResponse<UserModel>) => {
             return response.data;
           })
           .catch((err) => {
