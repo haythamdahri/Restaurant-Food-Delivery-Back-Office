@@ -33,6 +33,9 @@ import {
   faEye,
   faSync,
   faFileMedicalAlt,
+  faEdit,
+  faPlusCircle,
+  faUndo
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -61,7 +64,10 @@ library.add(
   faAngleDoubleRight,
   faEye,
   faSync,
-  faFileMedicalAlt
+  faFileMedicalAlt,
+  faEdit,
+  faPlusCircle,
+  faUndo
 );
 
 ReactDOM.render(

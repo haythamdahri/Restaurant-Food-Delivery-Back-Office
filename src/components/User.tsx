@@ -63,7 +63,7 @@ export default (props: { user: UserModel; setReload: any }) => {
             );
           })}
         </td>
-        <td>
+        <td align="center">
           <button
             onClick={(event) => handleAccountStatus(ENABLE)}
             className={`btn btn-success btn-sm font-weight-bold ${
@@ -87,7 +87,7 @@ export default (props: { user: UserModel; setReload: any }) => {
             )}
           </button>
         </td>
-        <td>
+        <td align="center">
           <button
             onClick={(event) => handleAccountStatus(DISABLE)}
             className={`btn btn-danger btn-sm font-weight-bold ${

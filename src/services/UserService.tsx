@@ -9,15 +9,9 @@ const API_URL = "http://localhost:8080/api/v1/users";
 
 class UserService {
   getBasicUsersPage(search: string = '', pageable: Pageable){
-    let url = API_URL + '/'
-    + '?page=' + pageable.pageNumber
-    + '&size=' + pageable.pageSize;
-    const params = {search: ''};
-    if(search !== '' ) {
-      params['search'] = search;
-    }
+    const params = { search: search !== '' ? search: '', page: pageable.pageNumber, size: pageable.pageSize };
     return axios
-      .get(url, { params, headers: authHeader() })
+      .get(`${API_URL}/`, { params, headers: authHeader() })
       .then((response: AxiosResponse<Page<UserModel>>) => {
         return response.data;
       })
@@ -27,10 +21,7 @@ class UserService {
   }
 
   getBasicUsers(search: string = ''){
-    const params = {search: ''};
-    if(search !== '' ) {
-      params['search'] = search;
-    }
+    const params = {search: search !== '' ? search: ''};
     return axios
       .get(`${API_URL}/basics`, { params, headers: authHeader() })
       .then((response: AxiosResponse<Array<UserModel>>) => {

@@ -18,6 +18,8 @@ import PrivateRoute, {
 } from "./services/AuthGuard";
 import Payments from "./components/Payments";
 import Reviews from "./components/Reviews";
+import Products from "./components/Products";
+import ProductEdit from "./components/ProductEdit";
 
 function App() {
   return (
@@ -32,22 +34,31 @@ function App() {
           <PrivateRoute exact={true} path="/">
             <Home />
           </PrivateRoute>
-          <AuthenticatedGuard path="/signin">
+          <AuthenticatedGuard exact={true} path="/signin">
             <SignIn />
           </AuthenticatedGuard>
-          <PrivateRoute path="/users">
+          <PrivateRoute exact={true} path="/users">
             <Users />
           </PrivateRoute>
-          <PrivateRoute path="/payments">
+          <PrivateRoute exact={true} path="/payments">
             <Payments />
           </PrivateRoute>
-          <PrivateRoute path="/reviews">
+          <PrivateRoute exact={true} path="/products">
+            <Products />
+          </PrivateRoute>
+          <PrivateRoute exact={true} path="/products/save">
+            <ProductEdit />
+          </PrivateRoute>
+          <PrivateRoute exact={true} path="/products/save/:id">
+            <ProductEdit />
+          </PrivateRoute>
+          <PrivateRoute exact={true} path="/reviews">
             <Reviews />
           </PrivateRoute>
-          <UserRoute path="/profile">
+          <UserRoute exact={true} path="/profile">
             <Profile />
           </UserRoute>
-          <Route path="/notfound">
+          <Route exact={true} path="/notfound">
             <NotFound />
           </Route>
           {/** Not Found Page */}

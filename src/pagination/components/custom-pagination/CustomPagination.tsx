@@ -23,7 +23,7 @@ export default (props: {
   }
 
   return (
-    <div className="card-actions align-items-center d-flex justify-content-center">
+    <div className="card-actions align-items-center d-flex justify-content-center pb-5">
         <span className="align-self-center mb-1 mx-1 text-muted">Elements per page:</span>
         <div className="dropdown">
           <button aria-expanded="false" aria-haspopup="true"

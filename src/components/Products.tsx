@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import User from "./User";
-import { UserModel } from "../models/UserModel";
-import UserService from "../services/UserService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Page } from "../pagination/Page";
 import CustomPagination from "../pagination/components/custom-pagination/CustomPagination";
 import CustomPaginationService from "../pagination/services/CustomPaginationService";
+import ProductService from "../services/ProductService";
+import { MealModel } from "../models/MealModel";
+import Product from "./Product";
+import { Link } from "react-router-dom";
 
 const inputStyle = {
   display: "block",
@@ -32,21 +33,21 @@ export default () => {
   const [error, setError] = useState(false);
   const [reload, setReload] = useState(Date.now);
   let isCancelled = false;
-  const [page, setPage] = useState(new Page<UserModel>());
+  const [page, setPage] = useState(new Page<MealModel>());
   const fetchData = async () => {
     try {
       const search = ((searchInput.current as unknown) as HTMLInputElement)
         .value;
       // Init data
       if (!isCancelled) {
-        setPage(new Page<UserModel>());
+        setPage(new Page<MealModel>());
         setLoading(true);
         setError(false);
-        const usersPage = await UserService.getBasicUsersPage(
+        const productsPage = await ProductService.getMealsPage(
           search,
           page.pageable
         );
-        setPage(usersPage);
+        setPage(productsPage);
         setLoading(false);
       }
     } catch (err) {
@@ -58,7 +59,7 @@ export default () => {
   };
 
   useEffect(() => {
-    document.title = "Users";
+    document.title = "Products";
     fetchData();
     return () => {
       isCancelled = true;
@@ -88,6 +89,13 @@ export default () => {
 
   return (
     <div className="row">
+      <div className="col-6 text-center mx-auto mt-3">
+        <Link to={`/products/save`} className="btn btn-outline-primary btn-sm btn-block font-weight-bold" 
+            style={{border: '1.5px solid blue', borderRadius: '40px'}}>
+          <FontAwesomeIcon icon="plus-circle" /> Add Product
+        </Link>
+      </div>
+
       <div className="col-sm-12 col-md-10 col-lg-10 col-xl-10 mx-auto mt-4 mb-4">
         <form onSubmit={onSearchSubmit}>
           <div className="form-row">
@@ -119,29 +127,24 @@ export default () => {
             <thead className="thead-light">
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Email</th>
-                <th scope="col">Username</th>
-                <th scope="col">Enabled</th>
-                <th scope="col">Location</th>
-                <th
-                  style={{ justifyContent: "center", textAlign: "center" }}
-                  scope="col"
-                >
-                  Roles
-                </th>
-                <th
-                  style={{ justifyContent: "center", textAlign: "center" }}
-                  scope="col"
-                  colSpan={2}
-                >
-                  Actions
-                </th>
+                <th scope="col">Name</th>
+                <th style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col">Image</th>
+                <th style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col">Price</th>
+                <th style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col">Sale Price</th>
+                <th style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col">Stock</th>
+                <th scope="col">Views</th>
+                <th style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col" colSpan={3}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={8} className="text-center bg-light">
+                  <td colSpan={10} className="text-center bg-light">
                     <div className="spinner-border text-primary" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>
@@ -150,9 +153,9 @@ export default () => {
               )}
               {!loading && page?.content?.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="text-center alert alert-dark">
+                  <td colSpan={10} className="text-center alert alert-dark">
                     <h2 className="font-weight-bold">
-                      <FontAwesomeIcon icon="exclamation-circle" /> No users
+                      <FontAwesomeIcon icon="exclamation-circle" /> No meals
                       found!
                     </h2>
                   </td>
@@ -160,7 +163,7 @@ export default () => {
               )}
               {error === true && (
                 <tr>
-                  <td colSpan={8} className="text-center alert alert-warning">
+                  <td colSpan={10} className="text-center alert alert-warning">
                     <h2 className="font-weight-bold">
                       <FontAwesomeIcon icon="exclamation-circle" /> An error occurred! 
                         <button onClick={fetchData} className="btn btn-warning font-weight-bold ml-2">
@@ -170,8 +173,8 @@ export default () => {
                   </td>
                 </tr>
               )}
-              {page?.content?.map((user, index) => {
-                return <User key={index} user={user} setReload={setReload} />;
+              {page?.content?.map((meal, index) => {
+                return <Product key={index} meal={meal} setReload={setReload} />;
               })}
             </tbody>
           </table>

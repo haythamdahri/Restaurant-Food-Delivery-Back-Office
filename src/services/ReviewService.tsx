@@ -21,19 +21,9 @@ class ReviewService {
   }
 
   getReviewsPage(search: string = "", pageable: Pageable) {
-    let url =
-      API_URL +
-      "/" +
-      "?page=" +
-      pageable.pageNumber +
-      "&size=" +
-      pageable.pageSize;
-    const params = { search: "" };
-    if (search !== "") {
-      params["search"] = search;
-    }
+    const params = { search: search !== '' ? search: '', page: pageable.pageNumber, size: pageable.pageSize };
     return axios
-      .get(url, { params, headers: authHeader() })
+      .get(`${API_URL}/`, { params, headers: authHeader() })
       .then(async (response: AxiosResponse<Page<ReviewModel>>) => {
         // Set meal for each review
         return response.data;

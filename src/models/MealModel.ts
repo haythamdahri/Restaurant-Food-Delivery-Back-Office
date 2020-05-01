@@ -9,6 +9,7 @@ export class MealModel {
     public stock!: number;
     public views!: number;
     public salePrice!: number;
+    public deleted!: boolean;
     public preferred!: boolean;
     public reviews!: Array<ReviewModel>;
 }

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ReviewModel } from '../models/ReviewModel';
-import { APPROVE, DISAPPROVE } from '../services/Constants';
-import ReviewService from '../services/ReviewService';
-import Swal from 'sweetalert2';
-import StarRatingComponent from 'react-star-rating-component';
-import { MealModel } from '../models/MealModel';
-import Moment from 'react-moment';
-import 'moment-timezone';
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ReviewModel } from "../models/ReviewModel";
+import { APPROVE, DISAPPROVE } from "../services/Constants";
+import ReviewService from "../services/ReviewService";
+import Swal from "sweetalert2";
+import StarRatingComponent from "react-star-rating-component";
+import { MealModel } from "../models/MealModel";
+import Moment from "react-moment";
+import "moment-timezone";
 
 export default (props: { review: ReviewModel }) => {
   const [approving, setApproving] = useState(false);
@@ -52,17 +52,17 @@ export default (props: { review: ReviewModel }) => {
   };
 
   const fetchData = async () => {
-    if( active === true ) {
+    if (active === true) {
       setMeal(await ReviewService.getReviewMeal(props.review.id));
     }
-  }
+  };
 
   useEffect(() => {
     fetchData();
     return () => {
       active = false;
-    }
-  }, [props])
+    };
+  }, [props]);
 
   return (
     <tr>
@@ -75,12 +75,12 @@ export default (props: { review: ReviewModel }) => {
           value={props.review.rating}
           starColor="orange"
           starCount={5}
-          name='rating'
+          name="rating"
           editing={false}
         />
       </td>
       <td align="center">
-          <Moment format="YYYY/MM/DD HH:mm:ss" date={props.review.timestamp} />
+        <Moment format="YYYY/MM/DD HH:mm:ss" date={props.review.timestamp} />
       </td>
       <td align="center">{meal.name}</td>
       <td align="center">
