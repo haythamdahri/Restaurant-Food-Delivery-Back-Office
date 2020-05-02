@@ -32,7 +32,7 @@ export default (props: { meal: MealModel; setReload: any }) => {
         });
         try {
           setDeleting(true);
-          await ProductService.deleteProduct(props.meal.id);
+          await ProductService.deleteProduct(Number(props.meal.id));
           // Set meal as deleted
           props.meal.deleted = true;
           setDeleting(false);
@@ -74,7 +74,7 @@ export default (props: { meal: MealModel; setReload: any }) => {
         });
         try {
           setUndoing(true);
-          await ProductService.UndoProductDelete(props.meal.id);
+          await ProductService.UndoProductDelete(Number(props.meal.id));
           // Set meal as deleted
           props.meal.deleted = false;
           setUndoing(false);

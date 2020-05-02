@@ -48,6 +48,17 @@ class ProductService {
       });
   }
 
+  postProduct(data: FormData) {
+    const headers = {'Content-Type': 'multipart/form-data', 'Authorization': authHeader().Authorization};
+    return axios
+      .post(`${API_URL}/`, data, {headers})
+      .then((response: AxiosResponse<MealModel>) => {
+        return response.data;
+      }).catch((err) => {
+        throw new Error(err);
+      });
+  }
+
   UndoProductDelete(id: number) {
     return axios
       .post(`${API_URL}/${id}/undo`, {}, {headers: authHeader()})

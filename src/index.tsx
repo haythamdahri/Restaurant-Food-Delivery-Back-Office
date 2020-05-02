@@ -35,7 +35,8 @@ import {
   faFileMedicalAlt,
   faEdit,
   faPlusCircle,
-  faUndo
+  faUndo,
+  faSave
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -67,7 +68,8 @@ library.add(
   faFileMedicalAlt,
   faEdit,
   faPlusCircle,
-  faUndo
+  faUndo,
+  faSave
 );
 
 ReactDOM.render(
