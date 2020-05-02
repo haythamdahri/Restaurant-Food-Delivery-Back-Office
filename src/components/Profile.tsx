@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { UserModel } from "../models/UserModel";
 import UserService from "../services/UserService";
 import { FILES_ENDOINT } from "../services/ConstantsService";
@@ -6,7 +6,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import ProfileFormModal from "./modals/ProfileFormModal";
-import FsLightbox from 'fslightbox-react';
+import FsLightbox from "fslightbox-react";
+import cover from "../cover.jpg";
+
+const profileStyle = {
+  background: `url(${cover}) no-repeat center`,
+  backgroundSize: "cover",
+  height: '300px',
+  width: '100%'
+};
 
 export default () => {
   const [user, setUser] = useState(new UserModel());
@@ -14,6 +22,7 @@ export default () => {
   const [toggler, setToggler] = useState(true);
   const [updatingImage, setUpdatingImage] = useState(false);
   const [error, setError] = useState(false);
+  const uploadRef = useRef(null);
   let active = true;
 
   const fetchUser = async () => {
@@ -132,45 +141,39 @@ export default () => {
       {!loading && !error && (
         <div className="col-sm-12 col-md-10 col-lg-10 col-xl-10 shadow rounded mx-auto">
           <div className="row">
-            <div className="col-12 text-center mt-3 mb-2">
-                <img
-                  src={user?.image.file}
-                  style={{ maxHeight: "150px", cursor: 'pointer' }}
-                  alt={user.username}
-                  className="img-thumbnail  shadow rounded"
-                  height="150"
-                  width="150"
-                  onClick={() => setToggler(!toggler)}
-                />
-                <FsLightbox
-                  toggler={toggler}
-                  sources={[
-                    user.image.file
-                  ]}
-                  />
-            </div>
-            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mx-auto text-center mt-1 mb-2">
-              {!updatingImage ? (
-                <div className="custom-file shadow-sm rounded">
+            <div
+              className="col-12 text-center"
+              style={profileStyle}
+            >
+              <img
+                src={user?.image.file}
+                style={{ maxHeight: "150px", height: '100%', width: '150px', cursor: "pointer" }}
+                alt={user.username}
+                className="img-thumbnail  shadow rounded mt-5"
+                onClick={() => setToggler(!toggler)}
+              />
+              <FsLightbox toggler={toggler} sources={[user.image.file]} />
                   <input
                     type="file"
                     onChange={handleFileChange}
-                    className="custom-file-input "
+                    className="custom-file-input hidden"
                     id="validatedCustomFile"
                     accept="image/*"
+                    ref={uploadRef}
                   />
-                  <label
-                    className="custom-file-label"
-                    htmlFor="validatedCustomFile"
-                  >
-                    Choose profile image...
-                  </label>
-                </div>
-              ) : (
-                <div className="spinner-border text-primary" role="status">
-                  <span className="sr-only">Loading...</span>
-                </div>
-              )}
+                  <button disabled={updatingImage} onClick={e => (uploadRef.current as unknown as HTMLElement).click()} className="btn btn-light btn-sm font-weight-bold text-center">
+                    {!updatingImage ? (
+                      <>
+                        <FontAwesomeIcon icon="upload" /> Change picture
+                      </>
+                    ) : (
+                      <>
+                        <div className="spinner-border spinner-border-sm spinner-border" role="status">
+                          <span className="sr-only">Loading...</span> 
+                        </div> Uploading picture
+                      </>
+                    )}
+                  </button>
             </div>
             <div className="col-12 text-center">
               <div className="w-100 shadow-sm p-1 mb-3 bg-light rounded"></div>

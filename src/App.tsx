@@ -20,6 +20,7 @@ import Payments from "./components/Payments";
 import Reviews from "./components/Reviews";
 import Products from "./components/Products";
 import ProductEdit from "./components/ProductEdit";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
 
       {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-      <div className="container-fluid">
+      <div className="container-fluid" style={{minHeight: '100vh', fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif'}}>
         <Switch>
           <PrivateRoute exact={true} path="/">
             <Home />
@@ -67,6 +68,8 @@ function App() {
           </Route>
         </Switch>
       </div>
+
+      <Footer />
     </Router>
   );
 }
