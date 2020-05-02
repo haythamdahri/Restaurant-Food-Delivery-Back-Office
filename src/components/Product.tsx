@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal, { SweetAlertResult } from "sweetalert2";
 import { MealModel } from "../models/MealModel";
 import ProductService from "../services/ProductService";
-import { IMAGE_URL } from "../services/Constants";
+import { IMAGE_URL } from "../services/ConstantsService";
 import { Link } from "react-router-dom";
 
 export default (props: { meal: MealModel; setReload: any }) => {

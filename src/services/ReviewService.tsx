@@ -3,7 +3,7 @@ import authHeader from "./AuthHeader";
 import { ReviewModel } from "../models/ReviewModel";
 import { Page } from "../pagination/Page";
 import { Pageable } from "../pagination/Pageable";
-import { APPROVE, DISAPPROVE } from "./Constants";
+import { APPROVE, DISAPPROVE } from "./ConstantsService";
 import { MealModel } from "../models/MealModel";
 
 const API_URL = "http://localhost:8080/api/v1/reviews";

@@ -36,7 +36,10 @@ import {
   faEdit,
   faPlusCircle,
   faUndo,
-  faSave
+  faSave,
+  faEnvelope,
+  faMapMarker,
+  faImage
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -69,7 +72,10 @@ library.add(
   faEdit,
   faPlusCircle,
   faUndo,
-  faSave
+  faSave,
+  faMapMarker,
+  faEnvelope,
+  faImage
 );
 
 ReactDOM.render(

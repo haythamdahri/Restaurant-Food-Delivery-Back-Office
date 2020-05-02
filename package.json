@@ -11,6 +11,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@types/fslightbox-react": "^1.4.0",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.37",
     "@types/react": "^16.9.34",
@@ -59,6 +60,7 @@
     "@types/react-router-dom": "^5.1.4",
     "@types/react-toast-notifications": "^2.4.0",
     "css-loader": "^3.5.3",
+    "fslightbox-react": "^1.4.9",
     "style-loader": "^1.2.0"
   }
 }

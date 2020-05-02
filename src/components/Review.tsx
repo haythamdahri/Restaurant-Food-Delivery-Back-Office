@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReviewModel } from "../models/ReviewModel";
-import { APPROVE, DISAPPROVE } from "../services/Constants";
+import { APPROVE, DISAPPROVE } from "../services/ConstantsService";
 import ReviewService from "../services/ReviewService";
 import Swal from "sweetalert2";
 import StarRatingComponent from "react-star-rating-component";

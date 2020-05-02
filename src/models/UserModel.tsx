@@ -13,5 +13,5 @@ export class UserModel {
     public location: string = '';
     public roles: Array<RoleModel> = [];
     public preferredMeals: Array<MealModel> = [];
-    private reviews: Array<ReviewModel> = [];
+    public reviews: Array<ReviewModel> = [];
 }

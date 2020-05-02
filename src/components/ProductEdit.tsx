@@ -207,6 +207,7 @@ export default () => {
                     name="file"
                     onChange={handleFileChange}
                     className={`custom-file-input shadow-sm`}
+                    accept="image/*"
                   />
                   <label
                     className="custom-file-label shadow-sm"

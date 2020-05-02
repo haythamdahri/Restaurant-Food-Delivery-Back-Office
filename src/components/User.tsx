@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { UserModel } from "../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UserService from "../services/UserService";
-import { ENABLE, DISABLE } from "../services/Constants";
+import { ENABLE, DISABLE } from "../services/ConstantsService";
 import Swal from 'sweetalert2'
 
 export default (props: { user: UserModel; setReload: any }) => {
