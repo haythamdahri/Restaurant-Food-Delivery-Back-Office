@@ -7,7 +7,6 @@ import UserService from "../../services/UserService";
 import { FILES_ENDOINT } from "../../services/ConstantsService";
 import AuthService from "../../services/AuthService";
 import { useHistory } from "react-router-dom";
-import { act } from "react-dom/test-utils";
 
 type FormDataType = {
   email: string;
@@ -118,7 +117,7 @@ export default (props: { user: UserModel; setUser: any; active: boolean }) => {
   return (
     <div
       className="modal fade"
-      id={"profiletModel"}
+      id={"profileModel"}
       tabIndex={-1}
       role="dialog"
       aria-labelledby={"profileModel"}
@@ -222,12 +221,14 @@ export default (props: { user: UserModel; setUser: any; active: boolean }) => {
                 className="btn btn-primary btn-block btn-sm btm-sm font-weight-bold"
               >
                 {saving ? (
+                  <>
                   <div
                     className="spinner-border spinner-border-sm text-light"
                     role="status"
                   >
                     <span className="sr-only">Loading...</span>
-                  </div>
+                  </div> Saving
+                  </>
                 ) : (
                   <>
                     <FontAwesomeIcon icon="save" /> Save

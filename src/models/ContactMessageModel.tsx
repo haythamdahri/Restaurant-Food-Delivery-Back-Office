@@ -6,4 +6,5 @@ export class ContactMessageModel {
     public phone: string = '';
     public content: string = '';
     public time: Date = new Date();
+    public responded: boolean = false;
 }

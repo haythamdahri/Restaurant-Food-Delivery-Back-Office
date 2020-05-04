@@ -209,7 +209,7 @@ export default () => {
                 type="button"
                 className="btn btn-primary font-weight-bold btn-sm  shadow rounded"
                 data-toggle="modal"
-                data-target={"#profiletModel"}
+                data-target={"#profileModel"}
               >
                 <FontAwesomeIcon icon="edit" /> Edit Profile
               </button>

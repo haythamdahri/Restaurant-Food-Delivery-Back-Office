@@ -18,7 +18,6 @@ const inputStyle = {
   MozTransition: "all 0.4s",
   transition: "all 0.4s",
   marginTop: "10px",
-  height: "42px",
   outline: "none",
   margin: 0,
   BorderRadius: "0%",
@@ -153,7 +152,10 @@ export default () => {
                 >
                   Order Date
                 </th>
-                <th scope="col">Payment Date</th>
+                <th 
+                  style={{ justifyContent: "center", textAlign: "center" }}
+                  scope="col"
+                >Payment Date</th>
               </tr>
             </thead>
             <tbody>

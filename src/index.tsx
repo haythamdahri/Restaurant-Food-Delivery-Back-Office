@@ -40,7 +40,8 @@ import {
   faEnvelope,
   faMapMarker,
   faImage,
-  faUpload
+  faUpload,
+  faReply
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -77,7 +78,8 @@ library.add(
   faMapMarker,
   faEnvelope,
   faImage,
-  faUpload
+  faUpload,
+  faReply
 );
 
 ReactDOM.render(

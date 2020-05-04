@@ -1,6 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PaymentModel } from "../models/PaymentModel";
+import Moment from "react-moment";
 
 export default (props: {payment: PaymentModel}) => {
 
@@ -26,8 +27,8 @@ export default (props: {payment: PaymentModel}) => {
           <FontAwesomeIcon icon="times-circle" color="red" />
         )}
       </td>
-      <td>{props.payment.order.time}</td>
-      <td>{props.payment.timestamp}</td>
+      <td><Moment format="YYYY/MM/DD HH:mm:ss" date={props.payment.order.time} /></td>
+      <td><Moment format="YYYY/MM/DD HH:mm:ss" date={props.payment.timestamp} /></td>
     </tr>
   );
 };

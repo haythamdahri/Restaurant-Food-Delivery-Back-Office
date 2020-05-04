@@ -21,6 +21,7 @@ import Reviews from "./components/Reviews";
 import Products from "./components/Products";
 import ProductEdit from "./components/ProductEdit";
 import Footer from "./components/Footer";
+import Support from "./components/Support";
 
 function App() {
   return (
@@ -55,6 +56,9 @@ function App() {
           </PrivateRoute>
           <PrivateRoute exact={true} path="/reviews">
             <Reviews />
+          </PrivateRoute>
+          <PrivateRoute exact={true} path="/support">
+            <Support />
           </PrivateRoute>
           <UserRoute exact={true} path="/profile">
             <Profile />
