@@ -22,6 +22,7 @@ import Products from "./components/Products";
 import ProductEdit from "./components/ProductEdit";
 import Footer from "./components/Footer";
 import Support from "./components/Support";
+import ChatSupport from "./components/ChatSupport";
 
 function App() {
   return (
@@ -31,7 +32,14 @@ function App() {
 
       {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-      <div className="container-fluid" style={{minHeight: '100vh', fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif'}}>
+      <div
+        className="container-fluid"
+        style={{
+          minHeight: "100vh",
+          fontFamily:
+            "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif",
+        }}
+      >
         <Switch>
           <PrivateRoute exact={true} path="/">
             <Home />
@@ -60,6 +68,9 @@ function App() {
           <PrivateRoute exact={true} path="/support">
             <Support />
           </PrivateRoute>
+          <Route exact={true} path="/chat-support">
+            <ChatSupport />
+          </Route>
           <UserRoute exact={true} path="/profile">
             <Profile />
           </UserRoute>

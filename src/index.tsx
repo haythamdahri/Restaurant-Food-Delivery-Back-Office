@@ -41,7 +41,10 @@ import {
   faMapMarker,
   faImage,
   faUpload,
-  faReply
+  faReply,
+  faSignature,
+  faPhone,
+  faCommentDots
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -79,7 +82,10 @@ library.add(
   faEnvelope,
   faImage,
   faUpload,
-  faReply
+  faReply,
+  faSignature,
+  faPhone,
+  faCommentDots
 );
 
 ReactDOM.render(

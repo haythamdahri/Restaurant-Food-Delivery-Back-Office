@@ -160,8 +160,11 @@ export default () => {
               <div className="card shadow rounded mt-3 mb-3">
                 <div className="card-body">
                   <h5 className="card-title font-weight-bold">
-                    {contactMessage.firstName} {contactMessage.lastName} |{" "}
-                    {contactMessage.email} | {contactMessage.phone}
+                    <FontAwesomeIcon icon="signature" /> {contactMessage.firstName} {contactMessage.lastName} {" "}{" "}
+                    <label className="text-secondary">|</label>{" "}{" "}
+                    <FontAwesomeIcon icon="envelope" /> {contactMessage.email} {" "}{" "}
+                    <label className="text-secondary">|</label> {" "}{" "}
+                    <FontAwesomeIcon icon="phone" /> {contactMessage.phone}{" "}{" "}
                   </h5>
                   <p className="card-text">{contactMessage.content}</p>
                   <p className="text-center">

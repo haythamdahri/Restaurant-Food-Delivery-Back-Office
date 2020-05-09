@@ -83,7 +83,7 @@ export default (props: { user: UserModel; setUser: any; active: boolean }) => {
         data.username,
         data.location
       );
-      newUser.image.file = FILES_ENDOINT + "/" + user.image.id;
+      newUser.image.file = FILES_ENDOINT + "/" + user.image?.id;
       if (active) {
         // Check if email is changed then sign out the current user
         if (user.email !== newUser.email) {
