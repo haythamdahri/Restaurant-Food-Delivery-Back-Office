@@ -15,11 +15,16 @@ const CHAT_SERVICE_URL = "http://localhost:8080/wschat/";
 var socket: any;
 var stompClient: any;
 
+/**
+ * TODO: IMPLEMENT SECOND USER WITH A PRIVATEMESSAGEBOX COMPONENT
+ */
 export default () => {
+  const connectionEstablishedRef = useRef(false);
   const [user, setUser] = useState<UserModel>();
   const [otherUser, setOtherUser] = useState<UserModel>();
   const [writing, setWriting] = useState(false);
   const userRef = useRef(user);
+  const messageInput = useRef(null);
   const otherUserRef = useRef(otherUser);
   const [messages, setMessages] = useState(new Array<ChatMessageModel>());
   const [loading, setLoading] = useState(true);
@@ -56,7 +61,18 @@ export default () => {
     document.title = "Support Chat";
     fetchUserAndConnect();
     return () => {
-      socket.close();
+      console.log('LEAVING ...');
+      // Send user left to queue if connection is already established
+      if( connectionEstablishedRef?.current === true ) {
+        const chatMessageRequestModel: ChatMessageRequestModel = new ChatMessageRequestModel();
+        chatMessageRequestModel.senderId = userRef.current?.id;
+        chatMessageRequestModel.receiverId = otherUserRef.current?.id === 2 ? 1 : 2;
+        chatMessageRequestModel.messageType = ChatMessageType.LEAVE;
+        stompClient.send("/app/removeUser", {}, JSON.stringify(chatMessageRequestModel))
+      }
+      setTimeout(() => {
+        socket.close();
+      }, 2500);
       active = false;
     };
   }, []);
@@ -69,6 +85,8 @@ export default () => {
   };
 
   const onConnected = async () => {
+    // Set connection as established
+    connectionEstablishedRef.current = true;
     // Subscribing to the public topic
     stompClient.subscribe("/topic/public", onMessageReceived);
     // Subscribing to the private topic | Same user message and Other user message
@@ -80,15 +98,25 @@ export default () => {
       "/user/" + otherUserRef.current?.id.toString() + "/reply",
       onMessageReceived
     );
+     // Registering user to server as a public chat user
+     const chatMessageRequestModel: ChatMessageRequestModel = new ChatMessageRequestModel();
+     chatMessageRequestModel.senderId = userRef.current?.id;
+     chatMessageRequestModel.receiverId = otherUserRef.current?.id === 2 ? 1 : 2;
+     chatMessageRequestModel.messageType = ChatMessageType.JOINED;
+     stompClient.send("/app/addUser", {}, JSON.stringify(chatMessageRequestModel));
     // Retrieve messages
     try {
       const messages = await ChatSupportService.getChatMessages(
         userRef.current?.id,
         otherUserRef?.current?.id
       );
-      setMessages(messages);
+      if( active ) {
+        setMessages(messages);
+      }
     } catch (err) {
-      setError(true);
+      if( active ) {
+        setError(true);
+      }
     } finally {
       if (active) {
         setLoading(false);
@@ -97,27 +125,48 @@ export default () => {
   };
 
   const onError = () => {
-    setError(true);
+    if( active ) {
+      setError(true);
+    }
   };
 
   const onMessageReceived = (payload: Frame) => {
     console.log("MESSAGE RECEIVED");
     const chatMessage: ChatMessageModel = JSON.parse(payload.body);
-    // Check if received ChatMessageType is MESSAGE
-    if( chatMessage.messageType === ChatMessageType.MESSAGE ) {
-      setMessages((messages) => messages.concat(chatMessage));
-      // Scroll window to bottom
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        left: 0,
-        behavior: "smooth",
-      });
-    } else {
-      if( chatMessage.messageType === ChatMessageType.START_WRITING && chatMessage.sender?.id !== userRef.current?.id ) {
+    console.log("MESSAGE TYPE: " + chatMessage.messageType);
+    // Switch Case ChatMessageType
+    switch(chatMessage.messageType) {
+      case ChatMessageType.JOINED:
+        if( chatMessage.sender?.id !== userRef.current?.id ) {
+          alert('A new user joined');
+        }
+        return;
+      case ChatMessageType.LEAVE:
+        if( chatMessage.sender?.id !== userRef.current?.id ) {
+          alert('User left!');
+        }
+        return;
+      case ChatMessageType.MESSAGE:
+        if( active ) {
+          setMessages((messages) => messages.concat(chatMessage));
+          // Scroll window to bottom
+          window.scrollTo({
+            top: document.body.scrollHeight,
+            left: 0,
+            behavior: "smooth",
+          });
+        }
+        return;
+      case ChatMessageType.START_WRITING:
+        if( active && chatMessage.sender?.id !== userRef.current?.id ) {
         setWriting(true);
-      } else if( chatMessage.messageType === ChatMessageType.STOP_WRITING && chatMessage.sender?.id !== userRef.current?.id ) {
-        setWriting(false);
-      }
+        }
+        return;
+      case ChatMessageType.STOP_WRITING:
+        if( active ) {
+          setWriting(false);
+        }
+        return;
     }
   };
 
@@ -126,7 +175,6 @@ export default () => {
       const chatMessageRequestModel: ChatMessageRequestModel = new ChatMessageRequestModel();
       chatMessageRequestModel.senderId = user?.id;
       chatMessageRequestModel.receiverId = user?.id === 2 ? 1 : 2;
-      chatMessageRequestModel.content = "Hello";
       chatMessageRequestModel.messageType = ChatMessageType.START_WRITING;
       stompClient.send(
         "/app/sendPrivateMessage",
@@ -143,7 +191,6 @@ export default () => {
       const chatMessageRequestModel: ChatMessageRequestModel = new ChatMessageRequestModel();
       chatMessageRequestModel.senderId = user?.id;
       chatMessageRequestModel.receiverId = user?.id === 2 ? 1 : 2;
-      chatMessageRequestModel.content = "Hello";
       chatMessageRequestModel.messageType = ChatMessageType.STOP_WRITING;
       stompClient.send(
         "/app/sendPrivateMessage",
@@ -160,7 +207,7 @@ export default () => {
       const chatMessageRequestModel: ChatMessageRequestModel = new ChatMessageRequestModel();
       chatMessageRequestModel.senderId = user?.id;
       chatMessageRequestModel.receiverId = user?.id === 2 ? 1 : 2;
-      chatMessageRequestModel.content = "Hello";
+      chatMessageRequestModel.content = (messageInput.current as unknown as HTMLInputElement).value;
       chatMessageRequestModel.messageType = ChatMessageType.MESSAGE;
       stompClient.send(
         "/app/sendPrivateMessage",
@@ -180,9 +227,9 @@ export default () => {
         )}
         {!error && !loading && (
           <>
-            <input type="text" onKeyPress={onStartWriting} onBlur={onStopWriting} className="form-control" placeholder="Write something ..." />
+            <input ref={messageInput} type="text" onKeyPress={onStartWriting} onBlur={onStopWriting} className="form-control" placeholder="Write something ..." />
             <button className="btn btn-primary btn-block" onClick={onSendMessage}>
-              <FontAwesomeIcon icon="send-back" /> Send Message
+              Send Message
             </button>
             <p>
               {messages?.map((message, index) => (
