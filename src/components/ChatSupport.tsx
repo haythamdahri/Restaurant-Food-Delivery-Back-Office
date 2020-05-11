@@ -22,8 +22,9 @@ var stompClient: any;
 export default () => {
   const connectionEstablishedRef = useRef(false);
   const [user, setUser] = useState<UserModel>();
-  const [populateUpdate, setPopulateUpdate] = useState<boolean>(true);
-  const [selectedUser, setSelectedUser] = useState<UserModel>();
+  const [populateUpdate, setPopulateUpdate] = useState<number>(0);
+  const [selectedUser, setSelectedUser] = useState<UserModel>(new UserModel());
+  const selectedUserRef = useRef<UserModel>();
   const userRef = useRef(user);
   const [users, setUsers] = useState(new Array<UserModel>());
   const usersRef = useRef(users);
@@ -117,6 +118,10 @@ export default () => {
       if (active) {
         setUsers(users);
         usersRef.current = users;
+        // Set first user in list as selected one
+        setSelectedUser(users[0]);
+        selectedUserRef.current = users[0];
+        setPopulateUpdate(Date.now());
       }
     } catch (err) {
       if (active) {
@@ -155,17 +160,18 @@ export default () => {
         .sort((u1, u2) => (u1.online === true ? -1 : 1));
       setUsers(usersRef.current);
       // Populate user status if current selected user online status is changed
-      if( chatMessage.sender?.id === selectedUser?.id ) {
+      if( chatMessage.sender?.id === selectedUserRef.current?.id ) {
         chatMessage.sender.online = chatMessage.messageType === ChatMessageType.JOINED ? true : false;
         setSelectedUser(chatMessage.sender);
-        setPopulateUpdate(!populateUpdate);
+        setPopulateUpdate(Date.now());
       }
     }
   };
 
   const onUserSelect = async (user: UserModel) => {
     setSelectedUser(user);
-    setPopulateUpdate(!populateUpdate);
+    selectedUserRef.current = user;
+    setPopulateUpdate(Date.now());
   }
 
   return (
@@ -182,7 +188,8 @@ export default () => {
               <div className="messages-box">
                 <div className="list-group rounded-0">
                   {users.map((user, i) => (
-                    <div onClick={e => onUserSelect(user)} style={{cursor: 'pointer'}} key={i} className="list-group-item list-group-item-action rounded-0">
+                    <div onClick={e => onUserSelect(user)} style={{cursor: 'pointer'}} key={i} 
+                        className={`list-group-item list-group-item-action rounded-0 ` + (selectedUser.id === user.id ? 'active' : '')}>
                       <div className="media">
                         <img
                           src={user.image.file}

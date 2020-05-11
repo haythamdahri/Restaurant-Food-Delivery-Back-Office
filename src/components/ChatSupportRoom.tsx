@@ -6,7 +6,6 @@ import { ChatMessageModel } from "../models/ChatMessageModel";
 import UserService from "../services/UserService";
 import { UserModel } from "../models/UserModel";
 import { FILES_ENDOINT } from "../services/ConstantsService";
-import { animateScroll } from "react-scroll";
 import ChatSupportService from "../services/ChatSupportService";
 import { ChatMessageType } from "../models/ChatMessageType";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,17 +20,19 @@ var stompClient: any;
  */
 export default (props: {
   chatUser: UserModel | undefined,
-  update: boolean
+  update: number
 }) => {
   const connectionEstablishedRef = useRef(false);
   const [user, setUser] = useState<UserModel>();
   const [writing, setWriting] = useState(false);
   const userRef = useRef(user);
   const messageInput = useRef(null);
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const chatUserRef = useRef<UserModel>();
   const [messages, setMessages] = useState(new Array<ChatMessageModel>());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [triesCounter, setTriesCounter] = useState(0);
   let active = true;
 
   const fetchUserAndConnect = async () => {
@@ -59,25 +60,25 @@ export default (props: {
 
   useEffect(() => {
     // Check if user only status is changed
-    console.log('EVENT POPULATED');
-    console.log(chatUserRef.current?.id === props.chatUser?.id);
     if( chatUserRef.current?.id === props.chatUser?.id ) {
       chatUserRef.current = props.chatUser;
-      return;
-    }
-    setError(false);
-    // Check if a chat user is selected
-    if (
-      props.chatUser !== undefined &&
-      props.chatUser.id !== null &&
-      props.chatUser.id !== 0
-    ) {
-      setLoading(true);
-      setMessages([]);
-      fetchUserAndConnect();
+      connect();
     } else {
-      setLoading(false);
       setError(false);
+      // Check if a chat user is selected
+      if (
+        props.chatUser !== undefined &&
+        props.chatUser.id !== null &&
+        props.chatUser.id !== 0
+      ) {
+        setLoading(true);
+        setMessages([]);
+        fetchUserAndConnect();
+      } else {
+        setMessages([]);
+        setLoading(false);
+        setError(false);
+      }
     }
     return () => {
       if (socket != null) {
@@ -89,6 +90,16 @@ export default (props: {
 
   const connect = () => {
     socket = new SockJS(CHAT_SERVICE_URL);
+    socket.onClosed = () => {
+      // Update tries counter
+      setTriesCounter((counter) => counter + 1);
+      if( triesCounter < 5 ) {
+        connectionEstablishedRef.current = false;
+        connect();
+      } else {
+        setMessages([]);
+      }
+    }
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
   };
@@ -98,11 +109,7 @@ export default (props: {
     connectionEstablishedRef.current = true;
     // Subscribing to the private topic | Same user message and Chat user message
     stompClient.subscribe(
-      "/user/" + userRef.current?.id.toString() + "/reply",
-      onMessageReceived
-    );
-    stompClient.subscribe(
-      "/user/" + chatUserRef.current?.id.toString() + "/reply",
+      "/user/" + (userRef.current!.id + chatUserRef.current!.id).toString() + "/reply",
       onMessageReceived
     );
     // Retrieve messages
@@ -121,10 +128,10 @@ export default (props: {
       });
       if (active) {
         setMessages(messages);
-        // Scroll Messages wrapper to bottom
-        animateScroll.scrollToBottom({
-          containerId: "messagesContainer"
-        });
+        setTimeout(() => {
+          // Scroll Messages wrapper to bottom
+          messagesEndRef.current?.scrollIntoView(false);
+        }, 150);
       }
     } catch (err) {
       if (active) {
@@ -138,9 +145,8 @@ export default (props: {
   };
 
   const onError = () => {
-    if (active) {
-      setError(true);
-    }
+    connectionEstablishedRef.current = false;
+    fetchUserAndConnect();
   };
 
   const onMessageReceived = (payload: Frame) => {
@@ -153,10 +159,12 @@ export default (props: {
       case ChatMessageType.MESSAGE:
         if (active) {
           setMessages((messages) => messages.concat(chatMessage));
+          // Scroll Messages wrapper to bottom
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }
         return;
       case ChatMessageType.START_WRITING:
-        if (active && chatMessage.sender?.id !== userRef.current?.id) {
+        if (active && chatMessage.sender.id === chatUserRef.current?.id) {
           setWriting(true);
         }
         return;
@@ -167,6 +175,7 @@ export default (props: {
         return;
     }
     // Scroll Messages wrapper to bottom
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const onStartWriting = () => {
@@ -214,6 +223,12 @@ export default (props: {
         {},
         JSON.stringify(chatMessageRequestModel)
       );
+      // Clear input
+      ((messageInput.current as unknown) as HTMLInputElement).value = '';
+      ((messageInput.current as unknown) as HTMLInputElement).blur();
+      // Scroll Messages wrapper to bottom
+      messagesEndRef.current?.scrollIntoView(false);
+      console.log('BLUR');
     } catch (err) {
       console.log(err);
     }
@@ -242,17 +257,17 @@ export default (props: {
           <>
             <div className="px-4 py-5 chat-box bg-white">
               {messages.map((message, i) => (
-                <div key={i} id="messagesContainer">
+                <div key={i}>
                   {message.receiver.id === user?.id ? (
                     <div className="media w-50 mb-3">
                       <img
                         src={message.sender.image.file}
                         alt="user"
-                        width="50"
-                        height="50"
+                        width="35"
+                        height="35"
                         className="rounded-circle"
                       />
-                      <div className="media-body ml-3">
+                      <div className="media-body ml-2">
                         <div className="bg-light rounded py-2 px-3 mb-2">
                           <p className="text-small mb-0 text-muted">
                             {message.content}
@@ -284,16 +299,17 @@ export default (props: {
                       <img
                         src={message.sender.image.file}
                         alt="user"
-                        width="50"
-                        height="50"
-                        className="rounded-circle float-right"
+                        width="35"
+                        height="35"
+                        className="rounded-circle float-right ml-2"
                       />
                     </div>
                   )}
                 </div>
               ))}
+              <div ref={messagesEndRef} />
               {/** No Messages */}
-              {!error && !loading && messages?.length == 0 && (
+              {!error && !loading && messages?.length === 0 && (
                 <p className="text-center text-muted text-small">
                   No messages ...
                 </p>
