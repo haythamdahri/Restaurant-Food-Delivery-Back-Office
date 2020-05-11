@@ -14,4 +14,6 @@ export class UserModel {
     public roles: Array<RoleModel> = [];
     public preferredMeals: Array<MealModel> = [];
     public reviews: Array<ReviewModel> = [];
+    public online: boolean = false;
+    public lastOnlineTime: Date = new Date();
 }

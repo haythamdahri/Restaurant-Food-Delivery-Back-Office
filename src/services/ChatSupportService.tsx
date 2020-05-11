@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import authHeader from "./AuthHeader";
 import { ChatMessageRequestModel } from "../models/ChatMessageRequestModel";
 import { ChatMessageModel } from "../models/ChatMessageModel";
+import { UserModel } from "../models/UserModel";
 
 export const CHAT_SERVICE_URL = "http://localhost:8080/api/v1/chat";
 
@@ -29,6 +30,20 @@ class ChatSupportService {
         headers: authHeader(),
       })
       .then((response: AxiosResponse<Array<ChatMessageModel>>) => {
+        return response.data;
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+
+  getChatUsers(userId: number | undefined) {
+    return axios
+      .get(`${CHAT_SERVICE_URL}/users`, {
+        params: {userId},
+        headers: authHeader(),
+      })
+      .then((response: AxiosResponse<Array<UserModel>>) => {
         return response.data;
       })
       .catch((err) => {

@@ -43,11 +43,6 @@ export default (props: any) => {
 
   useEffect(() => {
     document.title = "Sign In";
-    // Check if user is authenticated
-    if (AuthService.isAuthenticated()) {
-      // Redirect to home page
-      history.push("/");
-    }
     return () => {
       abortController.abort();
     };

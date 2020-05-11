@@ -44,7 +44,10 @@ import {
   faReply,
   faSignature,
   faPhone,
-  faCommentDots
+  faCommentDots,
+  faDotCircle,
+  faPaperPlane,
+  faCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -85,7 +88,10 @@ library.add(
   faReply,
   faSignature,
   faPhone,
-  faCommentDots
+  faCommentDots,
+  faDotCircle,
+  faPaperPlane,
+  faCircle
 );
 
 ReactDOM.render(

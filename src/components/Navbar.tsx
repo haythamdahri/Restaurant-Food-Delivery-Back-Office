@@ -87,13 +87,13 @@ export default () => {
               </li>
             </>
           )}
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/chat-support">
-              <FontAwesomeIcon icon="comment-dots" /> Chat Support
-            </NavLink>
-          </li>
           {AuthService.isAuthenticated() && (
             <>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/chat-support">
+                  <FontAwesomeIcon icon="comment-dots" /> Chat Support
+                </NavLink>
+              </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/profile">
                   <FontAwesomeIcon icon="user-circle" /> Profile

@@ -68,9 +68,9 @@ function App() {
           <PrivateRoute exact={true} path="/support">
             <Support />
           </PrivateRoute>
-          <Route exact={true} path="/chat-support">
+          <UserRoute exact={true} path="/chat-support">
             <ChatSupport />
-          </Route>
+          </UserRoute>
           <UserRoute exact={true} path="/profile">
             <Profile />
           </UserRoute>
