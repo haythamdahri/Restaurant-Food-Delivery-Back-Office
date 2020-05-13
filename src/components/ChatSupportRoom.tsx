@@ -5,11 +5,12 @@ import { ChatMessageRequestModel } from "../models/ChatMessageRequestModel";
 import { ChatMessageModel } from "../models/ChatMessageModel";
 import UserService from "../services/UserService";
 import { UserModel } from "../models/UserModel";
-import { FILES_ENDOINT } from "../services/ConstantsService";
+import { FILES_ENDOINT, CHANNEL_SEPARATOR } from "../services/ConstantsService";
 import ChatSupportService from "../services/ChatSupportService";
 import { ChatMessageType } from "../models/ChatMessageType";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Moment from "react-moment";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 const CHAT_SERVICE_URL = "http://localhost:8080/wschat/";
 var socket: any;
@@ -18,10 +19,7 @@ var stompClient: any;
 /**
  * TODO: IMPLEMENT SECOND USER WITH A PRIVATEMESSAGEBOX COMPONENT
  */
-export default (props: {
-  chatUser: UserModel | undefined,
-  update: number
-}) => {
+export default (props: { chatUser: UserModel | undefined; update: number }) => {
   const connectionEstablishedRef = useRef(false);
   const [user, setUser] = useState<UserModel>();
   const [writing, setWriting] = useState(false);
@@ -60,7 +58,7 @@ export default (props: {
 
   useEffect(() => {
     // Check if user only status is changed
-    if( chatUserRef.current?.id === props.chatUser?.id ) {
+    if (chatUserRef.current?.id === props.chatUser?.id) {
       chatUserRef.current = props.chatUser;
       connect();
     } else {
@@ -93,54 +91,62 @@ export default (props: {
     socket.onClosed = () => {
       // Update tries counter
       setTriesCounter((counter) => counter + 1);
-      if( triesCounter < 5 ) {
+      if (triesCounter < 5) {
         connectionEstablishedRef.current = false;
         connect();
       } else {
         setMessages([]);
       }
-    }
+    };
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
   };
 
   const onConnected = async () => {
-    // Set connection as established
-    connectionEstablishedRef.current = true;
-    // Subscribing to the private topic | Same user message and Chat user message
-    stompClient.subscribe(
-      "/user/" + (userRef.current!.id + chatUserRef.current!.id).toString() + "/reply",
-      onMessageReceived
-    );
-    // Retrieve messages
     try {
-      const messages = (
-        await ChatSupportService.getChatMessages(
-          userRef.current?.id,
-          chatUserRef?.current?.id
-        )
-      ).map((message: ChatMessageModel, i: number) => {
-        message.sender.image.file =
-          FILES_ENDOINT + "/" + message.sender.image.id;
-        message.receiver.image.file =
-          FILES_ENDOINT + "/" + message.receiver.image.id;
-        return message;
-      });
-      if (active) {
-        setMessages(messages);
-        setTimeout(() => {
-          // Scroll Messages wrapper to bottom
-          messagesEndRef.current?.scrollIntoView(false);
-        }, 150);
+      // Set connection as established
+      connectionEstablishedRef.current = true;
+      // Subscribing to the private topic | Same user message and Chat user message | Unique Socket
+      stompClient.subscribe(
+        "/user/" +
+          userRef.current!.id.toString() +
+          CHANNEL_SEPARATOR +
+          chatUserRef.current!.id.toString() +
+          "/reply",
+        onMessageReceived
+      );
+      // Retrieve messages
+      try {
+        const messages = (
+          await ChatSupportService.getChatMessages(
+            userRef.current?.id,
+            chatUserRef?.current?.id
+          )
+        ).map((message: ChatMessageModel, i: number) => {
+          message.sender.image.file =
+            FILES_ENDOINT + "/" + message.sender.image.id;
+          message.receiver.image.file =
+            FILES_ENDOINT + "/" + message.receiver.image.id;
+          return message;
+        });
+        if (active) {
+          setMessages(messages);
+          setTimeout(() => {
+            // Scroll Messages wrapper to bottom
+            messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+          }, 150);
+        }
+      } catch (err) {
+        if (active) {
+          setError(true);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
     } catch (err) {
-      if (active) {
-        setError(true);
-      }
-    } finally {
-      if (active) {
-        setLoading(false);
-      }
+      connect();
     }
   };
 
@@ -152,25 +158,39 @@ export default (props: {
   const onMessageReceived = (payload: Frame) => {
     const chatMessage: ChatMessageModel = JSON.parse(payload.body);
     // Update sender and receiver image
-    chatMessage.sender.image.file = FILES_ENDOINT + "/" + chatMessage?.sender.image.id;
-    chatMessage.receiver.image.file = FILES_ENDOINT + "/" + chatMessage?.receiver.image.id;
+    chatMessage.sender.image.file =
+      FILES_ENDOINT + "/" + chatMessage?.sender.image.id;
+    chatMessage.receiver.image.file =
+      FILES_ENDOINT + "/" + chatMessage?.receiver.image.id;
     // Switch Case ChatMessageType
     switch (chatMessage.messageType) {
       case ChatMessageType.MESSAGE:
         if (active) {
-          setMessages((messages) => messages.concat(chatMessage));
+          setMessages((messages) => [...messages, chatMessage]);
           // Scroll Messages wrapper to bottom
-          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+          messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
         return;
       case ChatMessageType.START_WRITING:
         if (active && chatMessage.sender.id === chatUserRef.current?.id) {
           setWriting(true);
+          // Scroll Messages wrapper to bottom
+          messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
         return;
       case ChatMessageType.STOP_WRITING:
         if (active) {
           setWriting(false);
+          messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
         return;
     }
@@ -205,9 +225,7 @@ export default (props: {
         {},
         JSON.stringify(chatMessageRequestModel)
       );
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const onSendMessage = async (event: any) => {
@@ -224,11 +242,10 @@ export default (props: {
         JSON.stringify(chatMessageRequestModel)
       );
       // Clear input
-      ((messageInput.current as unknown) as HTMLInputElement).value = '';
+      ((messageInput.current as unknown) as HTMLInputElement).value = "";
       ((messageInput.current as unknown) as HTMLInputElement).blur();
       // Scroll Messages wrapper to bottom
-      messagesEndRef.current?.scrollIntoView(false);
-      console.log('BLUR');
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       console.log(err);
     }
@@ -247,67 +264,83 @@ export default (props: {
             />{" "}
             {chatUserRef.current?.username || "...."}
           </p>
-          {writing && (
-            <p className="mb-0 py-1 text-center font-weight-bold">
-              Writing ...
-            </p>
-          )}
         </div>
         {!error && !loading && (
           <>
             <div className="px-4 py-5 chat-box bg-white">
-              {messages.map((message, i) => (
-                <div key={i}>
-                  {message.receiver.id === user?.id ? (
-                    <div className="media w-50 mb-3">
-                      <img
-                        src={message.sender.image.file}
-                        alt="user"
-                        width="35"
-                        height="35"
-                        className="rounded-circle"
-                      />
-                      <div className="media-body ml-2">
-                        <div className="bg-light rounded py-2 px-3 mb-2">
-                          <p className="text-small mb-0 text-muted">
-                            {message.content}
-                          </p>
+              <TransitionGroup className="todo-list">
+                {messages.map((message, i) => (
+                  <CSSTransition key={i} timeout={500} classNames="item">
+                    <div>
+                      {message.receiver?.id === user?.id ? (
+                        <div className="media w-50">
+                          {(i === 0 ||
+                            messages[i - 1].receiver?.id !== user?.id) && (
+                            <img
+                              src={message.sender.image.file}
+                              alt="user"
+                              width="35"
+                              height="35"
+                              className="rounded-circle"
+                            />
+                          )}
+                          <div className="media-body ml-2">
+                            <div className="bg-light rounded py-2 px-3">
+                              <p className="text-small mb-0 text-muted">
+                                {message.content}
+                              </p>
+                            </div>
+                            <p className="small text-muted">
+                              <Moment
+                                format="YYYY/MM/DD HH:mm:ss"
+                                date={message.timestamp}
+                              />
+                            </p>
+                          </div>
                         </div>
-                        <p className="small text-muted">
-                          <Moment
-                            format="YYYY/MM/DD HH:mm:ss"
-                            date={message.timestamp}
-                          />
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="media w-50 ml-auto mb-3">
-                      <div className="media-body">
-                        <div className="bg-primary rounded py-2 px-3 mb-2">
-                          <p className="text-small mb-0 text-white">
-                            {message.content}
-                          </p>
+                      ) : (
+                        <div className="media w-50 ml-auto">
+                          <div className="media-body">
+                            <div className="bg-primary rounded py-2 px-3">
+                              <p className="text-small mb-0 text-white">
+                                {message.content}
+                              </p>
+                            </div>
+                            <p className="small text-muted">
+                              <Moment
+                                format="YYYY/MM/DD HH:mm:ss"
+                                date={message.timestamp}
+                              />
+                            </p>
+                          </div>
+
+                          {(i === 0 ||
+                            messages[i - 1].sender?.id !== user?.id) && (
+                            <img
+                              src={message.sender.image.file}
+                              alt="user"
+                              width="35"
+                              height="35"
+                              className="rounded-circle float-right ml-2"
+                            />
+                          )}
                         </div>
-                        <p className="small text-muted">
-                          <Moment
-                            format="YYYY/MM/DD HH:mm:ss"
-                            date={message.timestamp}
-                          />
-                        </p>
-                      </div>
-                      <img
-                        src={message.sender.image.file}
-                        alt="user"
-                        width="35"
-                        height="35"
-                        className="rounded-circle float-right ml-2"
-                      />
+                      )}
+                      <div ref={messagesEndRef} />
                     </div>
-                  )}
+                  </CSSTransition>
+                ))}
+              </TransitionGroup>
+              {/** Writing Message */}
+              {writing && (
+                <div className="media w-50">
+                  <div className="media-body">
+                    <div className="rounded">
+                      <p className="text-small mb-0 text-muted">Writing ...</p>
+                    </div>
+                  </div>
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
+              )}
               {/** No Messages */}
               {!error && !loading && messages?.length === 0 && (
                 <p className="text-center text-muted text-small">
@@ -321,13 +354,18 @@ export default (props: {
               <form onSubmit={onSendMessage}>
                 <div className="input-group">
                   <input
+                    style={{
+                      fontSize: "14px",
+                      border: "1px solid blue",
+                      borderRadius: 0,
+                    }}
                     onKeyPress={onStartWriting}
                     onBlur={onStopWriting}
                     ref={messageInput}
                     type="text"
                     placeholder="Type a message ..."
                     aria-describedby="button-addon2"
-                    className="form-control rounded-0 border-0 py-4 bg-light"
+                    className="form-control py-3 bg-light"
                   />
                   <div className="input-group-append">
                     <button

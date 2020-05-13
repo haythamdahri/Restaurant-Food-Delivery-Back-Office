@@ -30,6 +30,7 @@ export default () => {
   const usersRef = useRef(users);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [triesCounter, setTriesCounter] = useState(0);
   let active = true;
 
   const fetchUserAndConnect = async () => {
@@ -75,6 +76,14 @@ export default () => {
 
   const connect = () => {
     socket = new SockJS(CHAT_SERVICE_URL);
+    socket.onClosed = () => {
+      // Update tries counter
+      setTriesCounter((counter) => counter + 1);
+      if (triesCounter < 5) {
+        connectionEstablishedRef.current = false;
+        connect();
+      }
+    };
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
   };
@@ -176,7 +185,7 @@ export default () => {
 
   return (
     <div className="row">
-      <div className="col-12 py-3 px-3">
+      <div className="col-12 shadow rounded">
         <div className="row rounded-lg overflow-hidden shadow">
           {/* <!-- Users box--> */}
           <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 px-0">
@@ -187,6 +196,9 @@ export default () => {
 
               <div className="messages-box">
                 <div className="list-group rounded-0">
+                  {(loading || error) &&(
+                    <p className="text-muted text-small text-center">Loading users ...</p>
+                  )}
                   {users.map((user, i) => (
                     <div onClick={e => onUserSelect(user)} style={{cursor: 'pointer'}} key={i} 
                         className={`list-group-item list-group-item-action rounded-0 ` + (selectedUser.id === user.id ? 'active' : '')}>
