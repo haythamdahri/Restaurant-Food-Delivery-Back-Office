@@ -230,24 +230,26 @@ export default (props: { chatUser: UserModel | undefined; update: number }) => {
 
   const onSendMessage = async (event: any) => {
     event.preventDefault();
-    try {
-      const chatMessageRequestModel: ChatMessageRequestModel = new ChatMessageRequestModel();
-      chatMessageRequestModel.senderId = user?.id;
-      chatMessageRequestModel.receiverId = props.chatUser?.id;
-      chatMessageRequestModel.content = ((messageInput.current as unknown) as HTMLInputElement).value;
-      chatMessageRequestModel.messageType = ChatMessageType.MESSAGE;
-      stompClient.send(
-        "/app/sendPrivateMessage",
-        {},
-        JSON.stringify(chatMessageRequestModel)
-      );
-      // Clear input
-      ((messageInput.current as unknown) as HTMLInputElement).value = "";
-      ((messageInput.current as unknown) as HTMLInputElement).blur();
-      // Scroll Messages wrapper to bottom
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    } catch (err) {
-      console.log(err);
+    if( ((messageInput.current as unknown) as HTMLInputElement).value.length > 0 ) {
+      try {
+        const chatMessageRequestModel: ChatMessageRequestModel = new ChatMessageRequestModel();
+        chatMessageRequestModel.senderId = user?.id;
+        chatMessageRequestModel.receiverId = props.chatUser?.id;
+        chatMessageRequestModel.content = ((messageInput.current as unknown) as HTMLInputElement).value;
+        chatMessageRequestModel.messageType = ChatMessageType.MESSAGE;
+        stompClient.send(
+          "/app/sendPrivateMessage",
+          {},
+          JSON.stringify(chatMessageRequestModel)
+        );
+        // Clear input
+        ((messageInput.current as unknown) as HTMLInputElement).value = "";
+        ((messageInput.current as unknown) as HTMLInputElement).blur();
+        // Scroll Messages wrapper to bottom
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 

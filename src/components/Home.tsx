@@ -25,7 +25,6 @@ export default () => {
   const [loadingPayments, setLoadingPayments] = useState(true);
   const [loadingOrders, setLoadingOrders] = useState(true);
   let history = useHistory();
-  let abortController: AbortController = new AbortController();
 
   useEffect(() => {
     let isCancelled = false;
@@ -104,7 +103,6 @@ export default () => {
     }
     return () => {
       isCancelled = true;
-      abortController.abort();
     };
   }, []);
 
