@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useForm } from "react-hook-form";
 import AuthService from "../services/AuthService";
@@ -38,7 +37,6 @@ export default (props: any) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
-  let history = useHistory();
   let abortController: AbortController = new AbortController();
 
   useEffect(() => {
@@ -58,7 +56,7 @@ export default (props: any) => {
     try {
       await AuthService.signin(data);
       // Rdirect user to home page
-      history.push("/");
+      window.location.href = "/";
     } catch(error) {
       // Set error with message
       setMessage(

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+##############################################
+#   Setup restaurant-backoffice prod container
+##############################################
+  restaurant-backoffice:
+    hostname: restaurant-backoffice
+    container_name: restaurant-backoffice
+    build: ./
+    expose:
+      - 80
+    ports:
+      - 81:80
+    networks:
+      - restaurant-network
+
+networks: 
+  restaurant-network:
+    external: true

@@ -1,15 +1,14 @@
 import React from "react";
-import { Link, NavLink, useHistory } from "react-router-dom";
+import { Link, NavLink} from "react-router-dom";
 import logo from "../logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthService from "../services/AuthService";
 
 export default () => {
-  let history = useHistory();
 
   const onSignOut = () => {
     AuthService.signout();
-    history.push("/signin");
+    window.location.href = "/signin";
   };
 
   return (
